@@ -5,13 +5,17 @@ import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import Logo from '../components/Logo';
 
+import { useNotifications } from '../context/NotificationContext';
+
 const SettingsPage = () => {
     const navigate = useNavigate();
     const { logout } = useAuth();
     const { toggleTheme } = useTheme();
+    const { enabled: notificationsEnabled, setEnabled: setNotificationsEnabled } = useNotifications();
 
     return (
         <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#0a0f16]">
+            {/* Same header... */}
             <header className="sticky top-0 z-50 bg-white/80 dark:bg-[#0a0f16]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -40,15 +44,20 @@ const SettingsPage = () => {
                         <span className="material-symbols-outlined text-blue-600">notifications_active</span> Notificaciones
                     </h2>
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
-                            <div>
-                                <p className="font-bold text-slate-900 dark:text-white">Alertas de Sistema</p>
-                                <p className="text-sm text-slate-500">Notificaciones críticas</p>
+                        <button
+                            onClick={() => setNotificationsEnabled(!notificationsEnabled)}
+                            className="w-full flex items-center justify-between p-4 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-blue-600/50 transition-all"
+                        >
+                            <div className="text-left">
+                                <p className="font-bold text-slate-900 dark:text-white tracking-tight">Alertas de Sistema</p>
+                                <p className="text-xs text-slate-500 font-medium">Notificar cambios de pedidos</p>
                             </div>
-                            <div className="w-11 h-6 bg-blue-600 rounded-full relative">
-                                <div className="absolute top-1 right-1 bg-white size-4 rounded-full"></div>
+                            <div className={`w-12 h-6 rounded-full relative transition-colors duration-300 flex items-center px-1
+                                ${notificationsEnabled ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-800'}`}>
+                                <div className={`size-4 bg-white rounded-full shadow-sm transition-transform duration-300
+                                    ${notificationsEnabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
                             </div>
-                        </div>
+                        </button>
                     </div>
                 </section>
 

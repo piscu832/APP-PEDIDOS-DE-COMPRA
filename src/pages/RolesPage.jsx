@@ -3,13 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import SideDrawer from '../components/SideDrawer';
 import BottomNav from '../components/BottomNav';
 import Logo from '../components/Logo';
-
-const initialUsers = [
-    { id: 1, name: "Dr. Juan Martínez", email: "j.martinez@villalba.com", role: "Administrador", isAdmin: true },
-    { id: 2, name: "Ing. Ana Silva", email: "a.silva@villalba.com", role: "Operario", isAdmin: false },
-    { id: 3, name: "Carlos Ruiz", email: "c.ruiz@villalba.com", role: "Operario", isAdmin: false },
-    { id: 4, name: "Elena Méndez", email: "e.mendez@villalba.com", role: "Administrador", isAdmin: true },
-];
+import { db } from '../firebase';
+import { collection, onSnapshot, doc, updateDoc, query, orderBy } from 'firebase/firestore';
 
 // --- Reusable Role Toggle ---
 const RoleToggle = ({ isAdmin, onChange }) => (
@@ -30,17 +25,40 @@ const RoleToggle = ({ isAdmin, onChange }) => (
 const RolesPage = () => {
     const { user } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [users, setUsers] = useState(initialUsers);
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
 
-    const toggleRole = (id) => {
-        setUsers(prev =>
-            prev.map(u =>
-                u.id === id
-                    ? { ...u, isAdmin: !u.isAdmin, role: u.isAdmin ? 'Operario' : 'Administrador' }
-                    : u
-            )
-        );
+    // Fetch real users from Firestore
+    React.useEffect(() => {
+        const q = query(collection(db, "users"), orderBy("name", "asc"));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const usersData = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                isAdmin: doc.data().role === 'Administrador'
+            }));
+            setUsers(usersData);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const toggleRole = async (targetUser) => {
+        // Prevent user from changing their own role (extra safety)
+        if (targetUser.id === user?.uid) {
+            return alert("No puedes cambiar tu propio rango desde aquí");
+        }
+
+        const newRole = targetUser.role === 'Administrador' ? 'Operario' : 'Administrador';
+        try {
+            const userRef = doc(db, "users", targetUser.id);
+            await updateDoc(userRef, { role: newRole });
+        } catch (error) {
+            console.error("Error updating role:", error);
+            alert("Error al actualizar el rol");
+        }
     };
 
     const filteredUsers = users.filter(u =>
@@ -86,43 +104,46 @@ const RolesPage = () => {
                 </div>
 
                 <div className="space-y-3">
-                    {filteredUsers.map(u => (
-                        <div key={u.id} className="bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-sm transition-all">
-                            {/* Avatar + name */}
-                            <div className="flex items-center gap-3">
-                                <div className={`size-10 rounded-full flex items-center justify-center border transition-colors duration-300
-                                    ${u.isAdmin
-                                        ? 'bg-blue-600/10 text-blue-600 border-blue-600/20'
-                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border-transparent'}`}
-                                >
-                                    <span className="material-symbols-outlined">person</span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-bold text-slate-900 dark:text-white">{u.name}</span>
-                                    <span className="text-[10px] text-slate-500 uppercase tracking-wider">{u.email}</span>
-                                </div>
-                            </div>
-
-                            {/* Role badge + toggle */}
-                            <div className="flex flex-col items-end gap-2 min-w-[80px]">
-                                {/* Role label with smooth fade between values */}
-                                <span className={`text-[9px] font-bold uppercase tracking-widest transition-colors duration-300
-                                    ${u.isAdmin ? 'text-blue-600' : 'text-slate-400'}`}
-                                >
-                                    {u.role}
-                                </span>
-
-                                {/* The actual toggle */}
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-[8px] font-bold uppercase tracking-wider text-slate-400">Op</span>
-                                    <RoleToggle isAdmin={u.isAdmin} onChange={() => toggleRole(u.id)} />
-                                    <span className="text-[8px] font-bold uppercase tracking-wider text-blue-600">Adm</span>
-                                </div>
-                            </div>
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-20 gap-4">
+                            <div className="size-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Cargando Usuarios...</p>
                         </div>
-                    ))}
+                    ) : filteredUsers.length > 0 ? (
+                        filteredUsers.map(u => (
+                            <div key={u.id} className="bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-sm transition-all">
+                                {/* Avatar + name */}
+                                <div className="flex items-center gap-3">
+                                    <div className={`size-10 rounded-full flex items-center justify-center border transition-colors duration-300
+                                        ${u.isAdmin
+                                            ? 'bg-blue-600/10 text-blue-600 border-blue-600/20'
+                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border-transparent'}`}
+                                    >
+                                        <span className="material-symbols-outlined">person</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-bold text-slate-900 dark:text-white">{u.name}</span>
+                                        <span className="text-[10px] text-slate-500 uppercase tracking-wider">{u.email}</span>
+                                    </div>
+                                </div>
 
-                    {filteredUsers.length === 0 && (
+                                {/* Role badge + toggle */}
+                                <div className="flex flex-col items-end gap-2 min-w-[80px]">
+                                    <span className={`text-[9px] font-bold uppercase tracking-widest transition-colors duration-300
+                                        ${u.isAdmin ? 'text-blue-600' : 'text-slate-400'}`}
+                                    >
+                                        {u.role}
+                                    </span>
+
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="text-[8px] font-bold uppercase tracking-wider text-slate-400">Op</span>
+                                        <RoleToggle isAdmin={u.isAdmin} onChange={() => toggleRole(u)} />
+                                        <span className="text-[8px] font-bold uppercase tracking-wider text-blue-600">Adm</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
                         <div className="text-center py-12 text-slate-400 text-sm font-medium">
                             No se encontraron usuarios.
                         </div>

@@ -19,8 +19,6 @@ const NewOrderPage = () => {
         if (!formData.item || !formData.quantity) return alert("Completa los campos obligatorios");
 
         const newOrder = {
-            id: Math.floor(1000 + Math.random() * 9000).toString(),
-            createdAt: new Date().toLocaleDateString('es-AR'),
             item: formData.item,
             entity: user?.name || "Usuario Desconocido",
             supplier: formData.supplier || "No especificado",

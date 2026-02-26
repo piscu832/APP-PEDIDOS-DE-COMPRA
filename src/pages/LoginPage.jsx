@@ -84,6 +84,8 @@ const LoginPage = () => {
                             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">mail</span>
                             <input
                                 required
+                                name="email"
+                                autoComplete="username email"
                                 className="w-full pl-12 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                                 placeholder="usuario@villalba.com"
                                 type="email"
@@ -99,6 +101,8 @@ const LoginPage = () => {
                             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">lock</span>
                             <input
                                 required
+                                name="password"
+                                autoComplete="current-password"
                                 className="w-full pl-12 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                                 placeholder="••••••••"
                                 type="password"
