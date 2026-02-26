@@ -1,46 +1,58 @@
 @import "tailwindcss";
 
+@theme {
+  --color-villalba-blue: #2563eb;
+  --color-villalba-deep: #020617;
+  --color-background-dark: #0a0f16;
+  --color-surface-dark: #161e2a;
+}
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Public Sans', Inter, system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #0a0f16;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+/* Base styles that respond to the .dark class */
+@layer base {
+  body {
+    @apply transition-colors duration-300;
+  }
+
+  html:not(.dark) body {
+    @apply bg-slate-50 text-slate-900;
+  }
+
+  html.dark body {
+    @apply bg-[#0a0f16] text-white;
+  }
 }
 
-@layer base {
+@layer utilities {
   .technical-dots {
     background-image: radial-gradient(circle, #2563eb 1px, transparent 1px);
     background-size: 24px 24px;
     opacity: 0.05;
   }
+
   .dot-grid {
     background-image: radial-gradient(rgba(37, 99, 235, 0.05) 1px, transparent 1px);
     background-size: 16px 16px;
   }
-}
 
-.premium-blur {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
+  .premium-blur {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
 
-.glass-card {
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  .glass-card {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
 }

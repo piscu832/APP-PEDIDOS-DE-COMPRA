@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import SideDrawer from '../components/SideDrawer';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
     const { user } = useAuth();
+    const { toggleTheme } = useTheme();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -33,7 +35,7 @@ const Dashboard = () => {
                         <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] -mt-1">ADMINISTRACIÓN CENTRAL</span>
                     </div>
                 </div>
-                <button onClick={() => document.documentElement.classList.toggle('dark')} className="size-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                <button onClick={toggleTheme} className="size-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                     <span className="material-symbols-outlined">contrast</span>
                 </button>
             </header>
