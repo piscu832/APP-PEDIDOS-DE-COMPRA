@@ -30,8 +30,8 @@ const OperatorPage = () => {
             <header className="sticky top-0 z-50 bg-white/90 dark:bg-[#020617]/90 backdrop-blur-xl border-b border-slate-200 dark:border-white/10">
                 <div className="flex items-center px-6 py-4 justify-between">
                     <button onClick={() => setIsMenuOpen(true)} className="material-symbols-outlined text-slate-500 dark:text-white/70">menu</button>
-                    <div className="flex flex-col items-center">
-                        <span className="font-bold tracking-widest text-xs uppercase">Pedidos</span>
+                    <div className="flex flex-col items-center gap-1">
+                        <Logo size="sm" />
                     </div>
                     <span className="relative">
                         <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-blue-600"></span>

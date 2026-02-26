@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Logo from '../components/Logo';
 
 const NewOrderPage = () => {
     const navigate = useNavigate();
@@ -18,6 +19,7 @@ const NewOrderPage = () => {
                     <button onClick={() => navigate(-1)} className="size-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                         <span className="material-symbols-outlined">arrow_back</span>
                     </button>
+                    <Logo size="sm" />
                     <div className="flex flex-col">
                         <span className="text-sm font-black tracking-tighter uppercase text-slate-900 dark:text-white">NUEVO PEDIDO</span>
                         <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-blue-600 mt-0.5">Carga de Datos</span>

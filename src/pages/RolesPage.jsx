@@ -4,22 +4,58 @@ import SideDrawer from '../components/SideDrawer';
 import BottomNav from '../components/BottomNav';
 import Logo from '../components/Logo';
 
+const initialUsers = [
+    { id: 1, name: "Dr. Juan Martínez", email: "j.martinez@villalba.com", role: "Administrador", isAdmin: true },
+    { id: 2, name: "Ing. Ana Silva", email: "a.silva@villalba.com", role: "Operario", isAdmin: false },
+    { id: 3, name: "Carlos Ruiz", email: "c.ruiz@villalba.com", role: "Operario", isAdmin: false },
+    { id: 4, name: "Elena Méndez", email: "e.mendez@villalba.com", role: "Administrador", isAdmin: true },
+];
+
+// --- Reusable Role Toggle ---
+const RoleToggle = ({ isAdmin, onChange }) => (
+    <button
+        onClick={onChange}
+        type="button"
+        role="switch"
+        aria-checked={isAdmin}
+        className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
+            ${isAdmin ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'}`}
+    >
+        <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-300
+            ${isAdmin ? 'translate-x-7' : 'translate-x-1'}`}
+        />
+    </button>
+);
+
 const RolesPage = () => {
     const { user } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [users, setUsers] = useState(initialUsers);
+    const [search, setSearch] = useState('');
 
-    const users = [
-        { name: "Dr. Juan Martínez", email: "j.martinez@villalba.com", role: "Administrador", active: true },
-        { name: "Ing. Ana Silva", email: "a.silva@villalba.com", role: "Operario", active: false },
-        { name: "Carlos Ruiz", email: "c.ruiz@villalba.com", role: "Operario", active: false },
-        { name: "Elena Méndez", email: "e.mendez@villalba.com", role: "Administrador", active: true },
-    ];
+    const toggleRole = (id) => {
+        setUsers(prev =>
+            prev.map(u =>
+                u.id === id
+                    ? { ...u, isAdmin: !u.isAdmin, role: u.isAdmin ? 'Operario' : 'Administrador' }
+                    : u
+            )
+        );
+    };
+
+    const filteredUsers = users.filter(u =>
+        u.name.toLowerCase().includes(search.toLowerCase()) ||
+        u.email.toLowerCase().includes(search.toLowerCase())
+    );
 
     return (
         <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#0a0f16]">
             <header className="flex items-center bg-white/80 dark:bg-[#0a0f16]/80 backdrop-blur-md p-4 sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-3 flex-1">
-                    <button onClick={() => setIsMenuOpen(true)} className="size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button
+                        onClick={() => setIsMenuOpen(true)}
+                        className="size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    >
                         <span className="material-symbols-outlined text-slate-600 dark:text-slate-400">menu</span>
                     </button>
                     <Logo />
@@ -39,15 +75,26 @@ const RolesPage = () => {
                 <div className="px-2 mb-6">
                     <div className="relative">
                         <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
-                        <input className="w-full pl-10 pr-4 h-11 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-blue-600/40 focus:border-blue-600 outline-none text-sm transition-all" placeholder="Buscar usuario..." type="text" />
+                        <input
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            className="w-full pl-10 pr-4 h-11 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-blue-600/40 focus:border-blue-600 outline-none text-sm transition-all text-slate-900 dark:text-white"
+                            placeholder="Buscar usuario..."
+                            type="text"
+                        />
                     </div>
                 </div>
 
                 <div className="space-y-3">
-                    {users.map((u, i) => (
-                        <div key={i} className="bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                    {filteredUsers.map(u => (
+                        <div key={u.id} className="bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-sm transition-all">
+                            {/* Avatar + name */}
                             <div className="flex items-center gap-3">
-                                <div className={`size-10 rounded-full flex items-center justify-center border ${u.active ? 'bg-blue-600/10 text-blue-600 border-blue-600/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border-transparent'}`}>
+                                <div className={`size-10 rounded-full flex items-center justify-center border transition-colors duration-300
+                                    ${u.isAdmin
+                                        ? 'bg-blue-600/10 text-blue-600 border-blue-600/20'
+                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border-transparent'}`}
+                                >
                                     <span className="material-symbols-outlined">person</span>
                                 </div>
                                 <div className="flex flex-col">
@@ -55,22 +102,40 @@ const RolesPage = () => {
                                     <span className="text-[10px] text-slate-500 uppercase tracking-wider">{u.email}</span>
                                 </div>
                             </div>
-                            <div className="flex flex-col items-end gap-2">
-                                <span className={`text-[9px] font-bold uppercase tracking-widest ${u.active ? 'text-blue-600' : 'text-slate-400'}`}>{u.role}</span>
-                                <div className="relative inline-block w-10 align-middle select-none">
-                                    <input checked={u.active} readOnly className={`absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 right-0 ${u.active ? 'border-blue-600 bg-blue-600' : 'border-slate-300 dark:border-slate-600'}`} type="checkbox" />
-                                    <label className={`block overflow-hidden h-5 rounded-full cursor-pointer transition-all duration-300 ${u.active ? 'bg-blue-600/20' : 'bg-slate-300 dark:bg-slate-700'}`}></label>
+
+                            {/* Role badge + toggle */}
+                            <div className="flex flex-col items-end gap-2 min-w-[80px]">
+                                {/* Role label with smooth fade between values */}
+                                <span className={`text-[9px] font-bold uppercase tracking-widest transition-colors duration-300
+                                    ${u.isAdmin ? 'text-blue-600' : 'text-slate-400'}`}
+                                >
+                                    {u.role}
+                                </span>
+
+                                {/* The actual toggle */}
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[8px] font-bold uppercase tracking-wider text-slate-400">Op</span>
+                                    <RoleToggle isAdmin={u.isAdmin} onChange={() => toggleRole(u.id)} />
+                                    <span className="text-[8px] font-bold uppercase tracking-wider text-blue-600">Adm</span>
                                 </div>
                             </div>
                         </div>
                     ))}
+
+                    {filteredUsers.length === 0 && (
+                        <div className="text-center py-12 text-slate-400 text-sm font-medium">
+                            No se encontraron usuarios.
+                        </div>
+                    )}
                 </div>
 
+                {/* Info box */}
                 <div className="mt-8 bg-slate-100 dark:bg-slate-800/40 rounded-xl p-4 border border-slate-200 dark:border-slate-700/50">
                     <div className="flex gap-3">
-                        <span className="material-symbols-outlined text-slate-400 text-lg">info</span>
+                        <span className="material-symbols-outlined text-slate-400 text-lg shrink-0">info</span>
                         <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                            El cambio de rol es instantáneo. Los <span className="text-blue-600 font-bold italic">Administradores</span> tienen acceso total a la configuración del sistema.
+                            Deslizá hacia la <strong className="text-slate-700 dark:text-slate-300">derecha</strong> para asignar nivel <span className="text-blue-600 font-bold italic">Administrador</span>,
+                            o hacia la <strong className="text-slate-700 dark:text-slate-300">izquierda</strong> para <span className="text-slate-500 font-bold">Operario</span>. El cambio es instantáneo.
                         </p>
                     </div>
                 </div>

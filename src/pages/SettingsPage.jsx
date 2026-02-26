@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
+import Logo from '../components/Logo';
 
 const SettingsPage = () => {
     const navigate = useNavigate();
@@ -14,8 +15,8 @@ const SettingsPage = () => {
             <header className="sticky top-0 z-50 bg-white/80 dark:bg-[#0a0f16]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">V</div>
-                        <h1 className="text-xl font-bold tracking-tight uppercase italic text-slate-900 dark:text-white">Villalba</h1>
+                        <Logo size="sm" />
+                        <h1 className="text-xl font-bold tracking-tight uppercase text-slate-900 dark:text-white">Configuración</h1>
                     </div>
                     <span className="material-symbols-outlined text-slate-500">settings</span>
                 </div>
