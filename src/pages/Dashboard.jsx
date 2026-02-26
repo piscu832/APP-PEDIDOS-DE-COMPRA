@@ -11,8 +11,8 @@ const Dashboard = () => {
     const navigate = useNavigate();
 
     const stats = [
-        { label: 'Activos', value: '482', change: '+5.2%', color: 'border-blue-600' },
-        { label: 'Pendientes', value: '018', change: 'REVISAR', color: 'border-amber-500' }
+        { label: 'Activos', value: '482', change: '+5.2%', borderColor: '#2563eb' },
+        { label: 'Pendientes', value: '018', change: 'REVISAR', borderColor: '#f59e0b' }
     ];
 
     const orders = [
@@ -65,7 +65,7 @@ const Dashboard = () => {
 
                 <div className="grid grid-cols-2 gap-3 mb-8">
                     {stats.map((stat) => (
-                        <div key={stat.label} className="bg-white dark:bg-[#161e2a] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 border-l-4 shadow-sm" style={{ borderLeftColor: stat.color }}>
+                        <div key={stat.label} className="bg-white dark:bg-[#161e2a] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 border-l-4 shadow-sm" style={{ borderLeftColor: stat.borderColor }}>
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
                             <div className="flex items-baseline gap-1">
                                 <span className="font-mono text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</span>
