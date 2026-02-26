@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import SideDrawer from '../components/SideDrawer';
 import Logo from '../components/Logo';
 import { useNavigate } from 'react-router-dom';
+import { useOrders } from '../context/OrdersContext';
+
+// Today's date in YYYY-MM-DD, always up to date at render time
+const todayISO = () => new Date().toISOString().split('T')[0];
 
 // --- Edit Order Modal ---
 const EditOrderModal = ({ order, onSave, onClose }) => {
@@ -11,10 +15,20 @@ const EditOrderModal = ({ order, onSave, onClose }) => {
         item: order.item,
         entity: order.entity,
         detail: order.detail,
-        deliveryDate: order.deliveryDate || '',
+        // default to today if not already set, so picker opens on current date
+        deliveryDate: order.deliveryDate || todayISO(),
     });
 
+    const dateRef = useRef(null);
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+    const openDatePicker = () => {
+        if (dateRef.current) {
+            // showPicker() is supported in Chrome/Edge 99+, Firefox 101+
+            try { dateRef.current.showPicker(); }
+            catch { dateRef.current.click(); }   // fallback for older browsers
+        }
+    };
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center px-4">
@@ -63,14 +77,15 @@ const EditOrderModal = ({ order, onSave, onClose }) => {
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Destino / Servicio</label>
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Proveedor Recomendado</label>
                         <div className="relative">
-                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">location_on</span>
+                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">storefront</span>
                             <input
                                 name="detail"
                                 value={form.detail}
                                 onChange={handleChange}
                                 className="w-full pl-10 pr-4 h-12 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/40"
+                                placeholder="Nombre del proveedor"
                             />
                         </div>
                     </div>
@@ -82,13 +97,23 @@ const EditOrderModal = ({ order, onSave, onClose }) => {
                             Fecha de Entrega Estimada
                         </label>
                         <div className="relative">
-                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">event</span>
+                            {/* Clickable calendar icon — triggers the hidden date picker */}
+                            <button
+                                type="button"
+                                onClick={openDatePicker}
+                                className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 hover:text-blue-600 transition-colors z-10"
+                                title="Abrir calendario"
+                            >
+                                <span className="material-symbols-outlined text-lg">event</span>
+                            </button>
                             <input
+                                ref={dateRef}
                                 name="deliveryDate"
                                 type="date"
                                 value={form.deliveryDate}
+                                min={todayISO()}
                                 onChange={handleChange}
-                                className="w-full pl-10 pr-4 h-12 bg-slate-50 dark:bg-slate-900 border border-blue-500/40 dark:border-blue-500/30 rounded-xl text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/40"
+                                className="w-full pl-10 pr-4 h-12 bg-slate-50 dark:bg-slate-900 border border-blue-500/40 dark:border-blue-500/30 rounded-xl text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer"
                             />
                         </div>
                     </div>
@@ -119,6 +144,7 @@ const EditOrderModal = ({ order, onSave, onClose }) => {
 const Dashboard = () => {
     const { user } = useAuth();
     const { toggleTheme } = useTheme();
+    const { orders, updateOrder, deleteOrder } = useOrders();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [editingOrder, setEditingOrder] = useState(null);
     const navigate = useNavigate();
@@ -130,21 +156,13 @@ const Dashboard = () => {
         { label: 'Pendientes', value: '018', change: 'REVISAR', borderColor: '#f59e0b' }
     ];
 
-    const [orders, setOrders] = useState([
-        { id: "9011", createdAt: "26/02/2026", item: "Kit de Prótesis Rodilla K2", entity: "Dr. Juan Martínez", detail: "Hosp. Regional Sur", deliveryDate: "" },
-        { id: "9012", createdAt: "25/02/2026", item: "Tornillería Tit. Grado 5", entity: "Ing. Ana Silva", detail: "Clínica Los Olivos", deliveryDate: "" },
-        { id: "9013", createdAt: "24/02/2026", item: "Embalaje Estándar BX-500", entity: "Carlos Ruiz", detail: "Almacén Central", deliveryDate: "" },
-    ]);
-
     const handleSave = (updatedFields) => {
-        setOrders(prev =>
-            prev.map(o => o.id === editingOrder.id ? { ...o, ...updatedFields } : o)
-        );
+        updateOrder(editingOrder.id, updatedFields);
         setEditingOrder(null);
     };
 
     const handleDelete = (id) => {
-        setOrders(prev => prev.filter(o => o.id !== id));
+        deleteOrder(id);
     };
 
     // Format stored ISO date (YYYY-MM-DD) to display (DD/MM/YYYY)

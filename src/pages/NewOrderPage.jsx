@@ -2,15 +2,41 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
+import { useOrders } from '../context/OrdersContext';
 
 const NewOrderPage = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { addOrder } = useOrders();
     const [formData, setFormData] = useState({
         item: '',
         quantity: '',
-        priority: 'Media'
+        priority: 'Media',
+        supplier: '',   // Proveedor recomendado
     });
+
+    const handleConfirm = () => {
+        if (!formData.item || !formData.quantity) return alert("Completa los campos obligatorios");
+
+        const newOrder = {
+            id: Math.floor(1000 + Math.random() * 9000).toString(),
+            createdAt: new Date().toLocaleDateString('es-AR'),
+            item: formData.item,
+            entity: user?.name || "Usuario Desconocido",
+            supplier: formData.supplier || "No especificado",
+            quantity: formData.quantity,
+            unit: "UDS",
+            code: "NEW-" + Math.floor(Math.random() * 999),
+            priority: formData.priority,
+            deliveryDate: "",
+            status: "Pendiente",
+        };
+
+        addOrder(newOrder);
+        navigate('/dashboard');
+    };
+
+    const set = (field) => (e) => setFormData({ ...formData, [field]: e.target.value });
 
     return (
         <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#0a0f16]">
@@ -28,13 +54,15 @@ const NewOrderPage = () => {
             </header>
 
             <main className="flex-1 w-full max-w-[480px] mx-auto px-6 py-8">
-                <div className="space-y-6">
+                <div className="space-y-5">
+
+                    {/* Solicitante — auto-filled, read-only */}
                     <div className="flex flex-col gap-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Usuario Solicitante</label>
-                        <div className="relative group">
-                            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors text-xl">person</span>
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Solicitante</label>
+                        <div className="relative">
+                            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
                             <input
-                                className="w-full pl-12 pr-4 h-14 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-500 dark:text-slate-400 cursor-not-allowed"
+                                className="w-full pl-12 pr-4 h-14 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-500 dark:text-slate-400 cursor-not-allowed"
                                 value={user?.name || "Cargando..."}
                                 readOnly
                                 type="text"
@@ -42,46 +70,72 @@ const NewOrderPage = () => {
                         </div>
                     </div>
 
+                    {/* Producto / Insumo */}
                     <div className="flex flex-col gap-1.5">
                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Producto / Insumo</label>
                         <div className="relative group">
                             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors text-xl">inventory_2</span>
                             <input
-                                className="w-full pl-12 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold focus:ring-blue-600 focus:border-blue-600 outline-none"
+                                className="w-full pl-12 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/40 focus:border-blue-600 outline-none transition-all"
                                 placeholder="Nombre del material"
                                 type="text"
-                                onChange={(e) => setFormData({ ...formData, item: e.target.value })}
+                                value={formData.item}
+                                onChange={set('item')}
                             />
                         </div>
                     </div>
 
+                    {/* Proveedor recomendado */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Proveedor Recomendado</label>
+                        <div className="relative group">
+                            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors text-xl">storefront</span>
+                            <input
+                                className="w-full pl-12 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/40 focus:border-blue-600 outline-none transition-all"
+                                placeholder="Nombre del proveedor"
+                                type="text"
+                                value={formData.supplier}
+                                onChange={set('supplier')}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Cantidad + Prioridad */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1.5">
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Cantidad</label>
-                            <input
-                                className="w-full px-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold focus:ring-blue-600 outline-none"
-                                placeholder="0"
-                                type="number"
-                                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                            />
+                            <div className="relative group">
+                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors text-xl">tag</span>
+                                <input
+                                    className="w-full pl-10 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/40 outline-none"
+                                    placeholder="0"
+                                    type="number"
+                                    value={formData.quantity}
+                                    onChange={set('quantity')}
+                                />
+                            </div>
                         </div>
                         <div className="flex flex-col gap-1.5">
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Prioridad</label>
-                            <select
-                                className="w-full px-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold focus:ring-blue-600 outline-none appearance-none"
-                                value={formData.priority}
-                                onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                            >
-                                <option>Baja</option>
-                                <option>Media</option>
-                                <option>Alta</option>
-                            </select>
+                            <div className="relative">
+                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl pointer-events-none">flag</span>
+                                <select
+                                    className="w-full pl-10 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/40 outline-none appearance-none"
+                                    value={formData.priority}
+                                    onChange={set('priority')}
+                                >
+                                    <option>Baja</option>
+                                    <option>Media</option>
+                                    <option>Alta</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-1.5 pt-4">
+                    {/* Actions */}
+                    <div className="flex flex-col gap-3 pt-4">
                         <button
-                            onClick={() => navigate('/dashboard')}
+                            onClick={handleConfirm}
                             className="w-full bg-blue-600 hover:bg-blue-700 text-white h-14 rounded-xl font-black tracking-widest shadow-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98] text-sm uppercase"
                         >
                             CONFIRMAR PEDIDO
@@ -89,11 +143,12 @@ const NewOrderPage = () => {
                         </button>
                         <button
                             onClick={() => navigate(-1)}
-                            className="w-full bg-transparent text-slate-500 h-12 rounded-xl font-bold text-xs uppercase tracking-widest"
+                            className="w-full bg-transparent text-slate-500 h-12 rounded-xl font-bold text-xs uppercase tracking-widest hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
                         >
                             Cancelar
                         </button>
                     </div>
+
                 </div>
             </main>
         </div>
