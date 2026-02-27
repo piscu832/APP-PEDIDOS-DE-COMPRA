@@ -70,31 +70,25 @@ const OperatorPage = () => {
                 {/* Orders List */}
                 {myOrders.length > 0 ? (
                     myOrders.map((order) => (
-                        <div key={order.id} className="bg-white dark:bg-[#161e2a] rounded-[20px] p-4 relative border border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:scale-[1.01]">
-                            <div className="flex justify-between items-start mb-3">
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-white/40">
-                                        <span className="material-symbols-outlined text-[14px]">id_card</span> #ORD-{order.orderNum}
+                        <div key={order.id} className="bg-white dark:bg-[#161e2a] rounded-[16px] p-3.5 relative border border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:scale-[1.01]">
+                            <div className="flex justify-between items-start mb-2.5">
+                                <div className="space-y-0.5">
+                                    <div className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-white/40">
+                                        <span className="material-symbols-outlined text-[13px]">id_card</span> #ORD-{order.orderNum}
                                     </div>
-                                    <h3 className="text-slate-900 dark:text-white text-base font-black tracking-tight mb-0.5">
+                                    <h3 className="text-slate-900 dark:text-white text-sm font-black tracking-tight leading-tight">
                                         {order.item}
                                     </h3>
-                                    <p className="text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-widest">{order.createdAt}</p>
+                                    <p className="text-blue-600 dark:text-blue-400 text-[9px] font-bold uppercase tracking-widest">{order.createdAt}</p>
                                 </div>
-                                <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest min-w-[70px] text-center border ${getPriorityStyles(order.priority)}`}>
+                                <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest min-w-[60px] text-center border ${getPriorityStyles(order.priority)}`}>
                                     {order.priority}
                                 </span>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-3 bg-slate-50 dark:bg-white/[0.03] rounded-[14px] p-3 border border-slate-100 dark:border-white/5">
-                                <div>
-                                    <p className="text-[9px] text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] font-bold mb-0.5">CANTIDAD</p>
-                                    <p className="text-slate-900 dark:text-white font-mono text-lg font-bold">{order.quantity}</p>
-                                </div>
-                                <div>
-                                    <p className="text-[9px] text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] font-bold mb-0.5">UNIDAD</p>
-                                    <p className="text-slate-900 dark:text-white font-mono text-lg font-bold">{order.unit || 'UDS'}</p>
-                                </div>
+                            <div className="bg-slate-50 dark:bg-white/[0.03] rounded-xl p-2.5 border border-slate-100 dark:border-white/5 inline-block min-w-[120px]">
+                                <p className="text-[8px] text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] font-bold mb-0.5">CANTIDAD</p>
+                                <p className="text-slate-900 dark:text-white font-mono text-base font-bold leading-none">{order.quantity} <span className="text-xs text-slate-500">{order.unit || 'UDS'}</span></p>
                             </div>
 
                             {order.deliveryDate && (

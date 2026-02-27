@@ -222,8 +222,13 @@ const Dashboard = () => {
                                         </div>
                                     </div>
 
-                                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight mb-1">{order.item}</h3>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 font-bold mb-3">{order.entity} <span className="text-slate-300 mx-1">•</span> {order.supplier || "Sin proveedor"}</p>
+                                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight mb-0.5">{order.item}</h3>
+                                    <div className="flex items-center gap-2 mb-2.5">
+                                        <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-500/10 text-blue-600 font-black text-[10px] rounded-md uppercase tracking-wider">
+                                            {order.quantity} {order.unit || 'UDS'}
+                                        </span>
+                                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{order.entity} <span className="text-slate-300 mx-1">•</span> {order.supplier || "Sin proveedor"}</span>
+                                    </div>
 
                                     {order.status === 'Otro Motivo' && order.reason && (
                                         <div className="mb-3 p-3 bg-rose-50/50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10 rounded-xl">
@@ -270,7 +275,7 @@ const Dashboard = () => {
                 <button onClick={() => navigate('/new-order')} className="fixed bottom-24 right-6 size-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40">
                     <span className="material-symbols-outlined text-3xl">add</span>
                 </button>
-            </main>
+            </main >
 
             {editingOrder && <EditOrderModal order={editingOrder} onSave={handleSave} onClose={() => setEditingOrder(null)} />}
             <SideDrawer isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} user={user} />
@@ -280,7 +285,7 @@ const Dashboard = () => {
                 <button onClick={() => navigate('/operator')} className="flex flex-col items-center gap-1 text-slate-400"><span className="material-symbols-outlined">receipt_long</span><span className="text-[9px] font-bold uppercase">Pedidos</span></button>
                 <button onClick={() => navigate('/settings')} className="flex flex-col items-center gap-1 text-slate-400"><span className="material-symbols-outlined">settings</span><span className="text-[9px] font-bold uppercase">Config</span></button>
             </nav>
-        </div>
+        </div >
     );
 };
 
