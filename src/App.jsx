@@ -28,7 +28,7 @@ function App() {
             </AnimatePresence>
 
             {!showSplash && (
-              <BrowserRouter>
+              <BrowserRouter basename="/APP-PEDIDOS-DE-COMPRA/">
                 <Routes>
                   <Route path="/" element={<Navigate to="/login" />} />
                   <Route path="/login" element={<LoginPage />} />
@@ -38,6 +38,7 @@ function App() {
                   <Route path="/new-order" element={<ProtectedRoute><NewOrderPage /></ProtectedRoute>} />
                   <Route path="/roles" element={<ProtectedRoute><RolesPage /></ProtectedRoute>} />
                   <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                  <Route path="/all-orders" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 </Routes>
               </BrowserRouter>
             )}
