@@ -67,7 +67,7 @@ const SplashScreen = ({ onComplete }) => {
                         transition={{ delay: 1.2, duration: 0.8 }}
                         className="text-blue-100/60 text-[10px] font-bold tracking-[0.3em] uppercase"
                     >
-                        Medical Systems · v1.0
+                        Pedidos Internos · v1.0
                     </motion.p>
                 </div>
 
