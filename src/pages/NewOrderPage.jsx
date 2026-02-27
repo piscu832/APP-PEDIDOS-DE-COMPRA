@@ -11,6 +11,7 @@ const NewOrderPage = () => {
     const [formData, setFormData] = useState({
         item: '',
         quantity: '',
+        unit: 'UDS',   // Unidad de medida
         priority: 'Media',
         supplier: '',   // Proveedor recomendado
     });
@@ -21,9 +22,10 @@ const NewOrderPage = () => {
         const newOrder = {
             item: formData.item,
             entity: user?.name || "Usuario Desconocido",
+            operatorName: user?.name, // For consistency in reports
             supplier: formData.supplier || "No especificado",
             quantity: formData.quantity,
-            unit: "UDS",
+            unit: formData.unit,
             code: "NEW-" + Math.floor(Math.random() * 999),
             priority: formData.priority,
             deliveryDate: "",
@@ -98,7 +100,7 @@ const NewOrderPage = () => {
                         </div>
                     </div>
 
-                    {/* Cantidad + Prioridad */}
+                    {/* Cantidad + Unidad */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1.5">
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Cantidad</label>
@@ -114,19 +116,39 @@ const NewOrderPage = () => {
                             </div>
                         </div>
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Prioridad</label>
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Unidad</label>
                             <div className="relative">
-                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl pointer-events-none">flag</span>
+                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl pointer-events-none">straighten</span>
                                 <select
                                     className="w-full pl-10 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-base font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/40 outline-none appearance-none"
-                                    value={formData.priority}
-                                    onChange={set('priority')}
+                                    value={formData.unit}
+                                    onChange={set('unit')}
                                 >
-                                    <option>Baja</option>
-                                    <option>Media</option>
-                                    <option>Alta</option>
+                                    <option value="UDS">Unidades (UDS)</option>
+                                    <option value="MTS">Metros (MTS)</option>
+                                    <option value="KG">Kilogramos (KG)</option>
+                                    <option value="LTS">Litros (LTS)</option>
+                                    <option value="BLT">Bultos (BLT)</option>
+                                    <option value="PQTE">Paquetes (PQTE)</option>
                                 </select>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Prioridad */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Prioridad</label>
+                        <div className="relative">
+                            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl pointer-events-none">flag</span>
+                            <select
+                                className="w-full pl-12 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-base font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/40 outline-none appearance-none"
+                                value={formData.priority}
+                                onChange={set('priority')}
+                            >
+                                <option>Baja</option>
+                                <option>Media</option>
+                                <option>Alta</option>
+                            </select>
                         </div>
                     </div>
 
