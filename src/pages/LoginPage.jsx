@@ -66,7 +66,7 @@ const LoginPage = () => {
                     <Logo size="lg" />
                 </div>
                 <h2 className="mt-8 text-2xl font-black tracking-tight text-slate-900 dark:text-white uppercase text-center leading-none">
-                    Acceso<br /><span className="text-blue-600">Corporativo</span>
+                    Acceso<br /><span className="text-blue-600">Pedidos Internos</span>
                 </h2>
             </header>
 
