@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { OrdersProvider } from './context/OrdersContext';
@@ -29,7 +29,7 @@ function App() {
             </AnimatePresence>
 
             {!showSplash && (
-              <BrowserRouter basename="/APP-PEDIDOS-DE-COMPRA/">
+              <HashRouter>
                 <Routes>
                   <Route path="/" element={<Navigate to="/login" />} />
                   <Route path="/login" element={<LoginPage />} />
@@ -42,7 +42,7 @@ function App() {
                   <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
                   <Route path="/all-orders" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 </Routes>
-              </BrowserRouter>
+              </HashRouter>
             )}
           </AuthProvider>
         </OrdersProvider>

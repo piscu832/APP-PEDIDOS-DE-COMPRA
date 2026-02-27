@@ -105,7 +105,7 @@ const NewOrderPage = () => {
                             <div className="relative group">
                                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors text-xl">tag</span>
                                 <input
-                                    className="w-full pl-10 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/40 outline-none"
+                                    className="w-full pl-10 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-base font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/40 outline-none"
                                     placeholder="0"
                                     type="number"
                                     value={formData.quantity}
@@ -118,7 +118,7 @@ const NewOrderPage = () => {
                             <div className="relative">
                                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl pointer-events-none">flag</span>
                                 <select
-                                    className="w-full pl-10 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/40 outline-none appearance-none"
+                                    className="w-full pl-10 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-base font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/40 outline-none appearance-none"
                                     value={formData.priority}
                                     onChange={set('priority')}
                                 >

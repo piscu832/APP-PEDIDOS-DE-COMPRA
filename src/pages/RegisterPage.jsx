@@ -61,7 +61,7 @@ const RegisterPage = () => {
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Nombre Completo</label>
                             <input
                                 required
-                                className="w-full px-5 h-14 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                                className="w-full px-5 h-14 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-base font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                                 placeholder="Ej: Dr. Juan Perez"
                                 type="text"
                                 value={form.name}
@@ -73,7 +73,7 @@ const RegisterPage = () => {
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Email Corporativo</label>
                             <input
                                 required
-                                className="w-full px-5 h-14 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                                className="w-full px-5 h-14 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-base font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                                 placeholder="usuario@villalba.com"
                                 type="email"
                                 value={form.email}
@@ -85,7 +85,7 @@ const RegisterPage = () => {
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Contraseña</label>
                             <input
                                 required
-                                className="w-full px-5 h-14 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                                className="w-full px-5 h-14 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-base font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                                 placeholder="••••••••"
                                 type="password"
                                 value={form.password}

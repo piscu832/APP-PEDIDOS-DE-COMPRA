@@ -86,7 +86,7 @@ const LoginPage = () => {
                                 required
                                 name="email"
                                 autoComplete="username email"
-                                className="w-full pl-12 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                                className="w-full pl-12 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-100 dark:border-slate-800 rounded-2xl text-base font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                                 placeholder="usuario@villalba.com"
                                 type="email"
                                 value={form.email}
@@ -103,7 +103,7 @@ const LoginPage = () => {
                                 required
                                 name="password"
                                 autoComplete="current-password"
-                                className="w-full pl-12 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                                className="w-full pl-12 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-100 dark:border-slate-800 rounded-2xl text-base font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                                 placeholder="••••••••"
                                 type="password"
                                 value={form.password}

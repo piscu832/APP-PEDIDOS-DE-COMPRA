@@ -60,7 +60,7 @@ const OperatorPage = () => {
                         <input
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-10 pr-4 h-11 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-500/50"
+                            className="w-full pl-10 pr-4 h-11 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500/50"
                             placeholder="Buscar en mis pedidos..."
                             type="text"
                         />

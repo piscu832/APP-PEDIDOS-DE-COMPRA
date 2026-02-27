@@ -135,7 +135,7 @@ const ReportsPage = () => {
                             placeholder="Buscar en el reporte..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full h-12 pl-12 pr-4 bg-slate-100 dark:bg-white/5 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-600 transition-all shadow-inner"
+                            className="w-full h-12 pl-12 pr-4 bg-slate-100 dark:bg-white/5 border-none rounded-2xl text-base font-bold outline-none focus:ring-2 focus:ring-blue-600 transition-all shadow-inner"
                         />
                     </div>
 
@@ -143,7 +143,7 @@ const ReportsPage = () => {
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="flex-1 h-12 px-4 bg-slate-100 dark:bg-white/5 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest outline-none shadow-inner"
+                            className="flex-1 h-12 px-4 bg-slate-100 dark:bg-white/5 border-none rounded-2xl text-base font-black uppercase tracking-widest outline-none shadow-inner"
                         >
                             <option value="Todos">Todos los Estados</option>
                             <option value="Pendiente">Pendientes</option>
