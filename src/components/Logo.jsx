@@ -1,13 +1,17 @@
 import React from 'react';
-import logoApp from '../assets/logo-app.png';
+import { useTheme } from '../context/ThemeContext';
+import logoWhite from '../assets/logo-white.png';
+import logoColor from '../assets/logo-color.png';
 
 const Logo = ({ size = "md" }) => {
+    const { isDark } = useTheme();
     const heightClass = size === "lg" ? "h-24" : size === "sm" ? "h-8" : "h-12";
+    const src = isDark ? logoWhite : logoColor;
 
     return (
         <img
-            src={logoApp}
-            alt="Villalba Medical Systems"
+            src={src}
+            alt="Pedidos Internos"
             className={`${heightClass} w-auto object-contain transition-opacity duration-300`}
         />
     );
