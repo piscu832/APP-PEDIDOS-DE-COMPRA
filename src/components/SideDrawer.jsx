@@ -9,6 +9,7 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
     const menuItems = [
         { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
         { name: 'Pedidos', icon: 'receipt_long', path: '/operator' },
+        { name: 'Reportes', icon: 'bar_chart', path: '/reports' },
         { name: 'Gestión de Roles', icon: 'admin_panel_settings', path: '/roles' },
         { name: 'Configuración', icon: 'settings', path: '/settings' },
         { name: 'Cerrar Sesión', icon: 'logout', path: '/login' }

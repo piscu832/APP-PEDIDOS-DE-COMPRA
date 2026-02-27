@@ -11,6 +11,7 @@ import OperatorPage from './pages/OperatorPage';
 import NewOrderPage from './pages/NewOrderPage';
 import RolesPage from './pages/RolesPage';
 import SettingsPage from './pages/SettingsPage';
+import ReportsPage from './pages/ReportsPage';
 import SplashScreen from './components/SplashScreen';
 import ProtectedRoute from './ProtectedRoute';
 import { AnimatePresence } from 'framer-motion';
@@ -37,6 +38,7 @@ function App() {
                   <Route path="/operator" element={<ProtectedRoute><OperatorPage /></ProtectedRoute>} />
                   <Route path="/new-order" element={<ProtectedRoute><NewOrderPage /></ProtectedRoute>} />
                   <Route path="/roles" element={<ProtectedRoute><RolesPage /></ProtectedRoute>} />
+                  <Route path="/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
                   <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
                   <Route path="/all-orders" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 </Routes>

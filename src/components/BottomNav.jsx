@@ -7,6 +7,7 @@ const BottomNav = ({ active }) => {
     const navItems = [
         { name: 'Panel', icon: 'dashboard', path: '/dashboard', id: 'dashboard' },
         { name: 'Pedidos', icon: 'receipt_long', path: '/operator', id: 'operator' },
+        { name: 'Reportes', icon: 'bar_chart', path: '/reports', id: 'reports' },
         { name: 'Config', icon: 'settings', path: '/settings', id: 'settings' }
     ];
 
