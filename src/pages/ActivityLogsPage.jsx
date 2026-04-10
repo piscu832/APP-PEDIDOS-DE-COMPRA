@@ -11,6 +11,11 @@ const ActivityLogsPage = () => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Filter states
+    const [filterText, setFilterText] = useState('');
+    const [dateFrom, setDateFrom] = useState('');
+    const [dateTo, setDateTo] = useState('');
+
     useEffect(() => {
         const fetchLogs = async () => {
             try {
@@ -34,6 +39,53 @@ const ActivityLogsPage = () => {
         return 'slate';
     };
 
+    const filteredLogs = logs.filter(log => {
+        const matchesText = log.details.toLowerCase().includes(filterText.toLowerCase()) || 
+                           log.userName.toLowerCase().includes(filterText.toLowerCase()) ||
+                           log.action.toLowerCase().includes(filterText.toLowerCase());
+        
+        const logDate = log.timestamp?.toDate ? log.timestamp.toDate() : null;
+        let matchesDate = true;
+
+        if (logDate) {
+            if (dateFrom) {
+                const from = new Date(dateFrom);
+                from.setHours(0, 0, 0, 0);
+                if (logDate < from) matchesDate = false;
+            }
+            if (dateTo) {
+                const to = new Date(dateTo);
+                to.setHours(23, 59, 59, 999);
+                if (logDate > to) matchesDate = false;
+            }
+        }
+
+        return matchesText && matchesDate;
+    });
+
+    const exportToCSV = () => {
+        if (filteredLogs.length === 0) return alert("No hay datos para exportar con los filtros actuales.");
+
+        const headers = ["Fecha", "Accion", "Detalle", "Usuario", "ID Usuario"];
+        const rows = filteredLogs.map(log => [
+            log.displayTime,
+            log.action,
+            `"${log.details.replace(/"/g, '""')}"`,
+            log.userName,
+            log.userId
+        ]);
+
+        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Reporte_Movimientos_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#0a0f16]">
             <header className="flex items-center bg-white/80 dark:bg-[#0a0f16]/80 backdrop-blur-md p-4 sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800">
@@ -52,10 +104,56 @@ const ActivityLogsPage = () => {
                 </div>
             </header>
 
-            <main className="flex-1 w-full max-w-[600px] mx-auto px-4 py-8 pb-40">
-                <div className="mb-8 px-2">
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Registro de Movimientos</h1>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm italic font-medium">Historial de acciones críticas realizadas en el sistema.</p>
+            <main className="flex-1 w-full max-w-[700px] mx-auto px-4 py-8 pb-40">
+                <div className="mb-8 px-2 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Registro de Movimientos</h1>
+                        <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm italic font-medium">Historial de acciones críticas realizadas en el sistema.</p>
+                    </div>
+                    <button 
+                        onClick={exportToCSV}
+                        className="h-11 px-6 bg-emerald-600 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all"
+                    >
+                        <span className="material-symbols-outlined text-lg">download</span>
+                        Exportar CSV
+                    </button>
+                </div>
+
+                {/* Filters Section */}
+                <div className="bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mb-6 shadow-sm overflow-hidden">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1.5 md:col-span-2">
+                            <label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Buscar por detalle o usuario</label>
+                            <div className="relative">
+                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                                <input 
+                                    type="text"
+                                    value={filterText}
+                                    onChange={(e) => setFilterText(e.target.value)}
+                                    placeholder="Ej: Pedido #ORD-0001 o Juan Perez..."
+                                    className="w-full h-11 pl-10 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Desde</label>
+                            <input 
+                                type="date"
+                                value={dateFrom}
+                                onChange={(e) => setDateFrom(e.target.value)}
+                                className="w-full h-11 px-4 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all color-scheme-light dark:color-scheme-dark"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Hasta</label>
+                            <input 
+                                type="date"
+                                value={dateTo}
+                                onChange={(e) => setDateTo(e.target.value)}
+                                className="w-full h-11 px-4 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all color-scheme-light dark:color-scheme-dark"
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 <div className="space-y-4">
@@ -64,8 +162,8 @@ const ActivityLogsPage = () => {
                             <div className="size-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Cargando registros...</p>
                         </div>
-                    ) : logs.length > 0 ? (
-                        logs.map((log) => {
+                    ) : filteredLogs.length > 0 ? (
+                        filteredLogs.map((log) => {
                             const color = getActionColor(log.action);
                             return (
                                 <div key={log.id} className="relative bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm transition-all hover:shadow-md group overflow-hidden">
