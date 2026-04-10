@@ -8,13 +8,36 @@ import {
     updateDoc,
     deleteDoc,
     doc,
+    setDoc,
+    getDoc,
     serverTimestamp,
     query,
     orderBy,
+    runTransaction,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
 const COLLECTION = "orders";
+const COUNTER_DOC = "metadata/orderCounter";
+
+// --- Get next sequential ID (atomic) ---
+export const getNextGlobalId = async () => {
+    const counterRef = doc(db, "metadata", "orderCounter");
+    let nextId = 1;
+
+    await runTransaction(db, async (transaction) => {
+        const counterDoc = await transaction.get(counterRef);
+        if (!counterDoc.exists()) {
+            transaction.set(counterRef, { lastId: 1 });
+            nextId = 1;
+        } else {
+            nextId = counterDoc.data().lastId + 1;
+            transaction.update(counterRef, { lastId: nextId });
+        }
+    });
+
+    return nextId;
+};
 
 // --- Leer todos los pedidos ---
 export const getOrders = async () => {

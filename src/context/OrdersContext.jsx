@@ -3,7 +3,8 @@ import {
     getOrders,
     createOrder as fsCreateOrder,
     updateOrder as fsUpdateOrder,
-    deleteOrder as fsDeleteOrder
+    deleteOrder as fsDeleteOrder,
+    getNextGlobalId
 } from '../services/ordersService';
 import { onSnapshot, collection, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -91,28 +92,22 @@ export const OrdersProvider = ({ children }) => {
         }
     };
 
-    const getNextOrderDetails = () => {
-        // Find the highest globalId in existing orders
-        const maxId = orders.reduce((max, o) => Math.max(max, o.globalId || 0), 0);
-        const nextId = maxId + 1;
-
-        // Numbering Logic: 0001 to 9999, then 1-0000, 1-0001...
-        const cycle = Math.floor(nextId / 10000);
-        const remainder = nextId % 10000;
-
-        const orderNum = cycle === 0
-            ? remainder.toString().padStart(4, '0')
-            : `${cycle}-${remainder.toString().padStart(4, '0')}`;
-
-        return { globalId: nextId, orderNum };
-    };
-
     const addOrder = async (orderData) => {
         try {
-            const { globalId, orderNum } = getNextOrderDetails();
+            // Get a guaranteed sequential ID from the atomic counter
+            const nextId = await getNextGlobalId();
+            
+            // Format logic: 0001 to 9999, then 1-0000, 1-0001...
+            const cycle = Math.floor(nextId / 10000);
+            const remainder = nextId % 10000;
+
+            const orderNum = cycle === 0
+                ? remainder.toString().padStart(4, '0')
+                : `${cycle}-${remainder.toString().padStart(4, '0')}`;
+
             await fsCreateOrder({
                 ...orderData,
-                globalId,
+                globalId: nextId,
                 orderNum
             });
             showNotification(`Pedido #ORD-${orderNum} creado correctamente`, 'emerald');

@@ -72,6 +72,44 @@ const RolesPage = () => {
         }
     };
 
+    const deleteUser = async (targetUser) => {
+        // 1. Safety checks
+        if (targetUser.id === user?.uid) {
+            return alert("No puedes eliminar tu propia cuenta.");
+        }
+
+        // Find the "First Admin" (earliest createdAt among admins)
+        const admins = users.filter(u => u.isAdmin).sort((a, b) => 
+            new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
+        );
+        
+        if (admins.length > 0 && targetUser.id === admins[0].id) {
+            return alert("No se puede eliminar al Administrador Principal del sistema.");
+        }
+
+        if (!window.confirm(`¿Estás seguro de que deseas eliminar permanentemente a ${targetUser.name}?`)) {
+            return;
+        }
+
+        try {
+            const { deleteDoc } = await import('firebase/firestore');
+            await deleteDoc(doc(db, "users", targetUser.id));
+
+            // Log activity
+            if (user) {
+                logActivity(
+                    user.uid,
+                    user.name,
+                    'Eliminación de Usuario',
+                    `Eliminó permanentemente al usuario ${targetUser.name} (${targetUser.email})`
+                );
+            }
+        } catch (error) {
+            console.error("Error deleting user:", error);
+            alert("Error al eliminar el usuario");
+        }
+    };
+
     const filteredUsers = users.filter(u =>
         u.name.toLowerCase().includes(search.toLowerCase()) ||
         u.email.toLowerCase().includes(search.toLowerCase())
@@ -139,18 +177,25 @@ const RolesPage = () => {
                                 </div>
 
                                 {/* Role badge + toggle */}
-                                <div className="flex flex-col items-end gap-2 min-w-[80px]">
-                                    <span className={`text-[9px] font-bold uppercase tracking-widest transition-colors duration-300
-                                        ${u.isAdmin ? 'text-blue-600' : 'text-slate-400'}`}
-                                    >
-                                        {u.role}
-                                    </span>
-
-                                    <div className="flex items-center gap-1.5">
-                                        <span className="text-[8px] font-bold uppercase tracking-wider text-slate-400">Op</span>
-                                        <RoleToggle isAdmin={u.isAdmin} onChange={() => toggleRole(u)} />
-                                        <span className="text-[8px] font-bold uppercase tracking-wider text-blue-600">Adm</span>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex flex-col items-end gap-1.5">
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="text-[8px] font-bold uppercase tracking-wider text-slate-400">Op</span>
+                                            <RoleToggle isAdmin={u.isAdmin} onChange={() => toggleRole(u)} />
+                                            <span className="text-[8px] font-bold uppercase tracking-wider text-blue-600">Adm</span>
+                                        </div>
                                     </div>
+
+                                    {/* Only show delete button if not the main admin */}
+                                    {!(users.filter(user => user.isAdmin).sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0))[0]?.id === u.id) && (
+                                        <button
+                                            onClick={() => deleteUser(u)}
+                                            className="size-9 flex items-center justify-center rounded-xl bg-rose-500/10 text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-sm"
+                                            title="Eliminar Usuario"
+                                        >
+                                            <span className="material-symbols-outlined text-lg">delete</span>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))
