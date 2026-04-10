@@ -12,6 +12,7 @@ import NewOrderPage from './pages/NewOrderPage';
 import RolesPage from './pages/RolesPage';
 import SettingsPage from './pages/SettingsPage';
 import ReportsPage from './pages/ReportsPage';
+import ActivityLogsPage from './pages/ActivityLogsPage';
 import SplashScreen from './components/SplashScreen';
 import ProtectedRoute from './ProtectedRoute';
 import { AnimatePresence } from 'framer-motion';
@@ -41,6 +42,7 @@ function App() {
                   <Route path="/reports" element={<ProtectedRoute adminOnly><ReportsPage /></ProtectedRoute>} />
                   <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
                   <Route path="/all-orders" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/activity" element={<ProtectedRoute adminOnly><ActivityLogsPage /></ProtectedRoute>} />
                 </Routes>
               </HashRouter>
             )}

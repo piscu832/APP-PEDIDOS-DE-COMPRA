@@ -9,6 +9,7 @@ import { onSnapshot, collection, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useNotifications } from './NotificationContext';
 import { useAuth } from './AuthContext';
+import { logActivity } from '../services/activityService';
 
 const OrdersContext = createContext();
 
@@ -62,6 +63,11 @@ export const OrdersProvider = ({ children }) => {
             } else {
                 showNotification(`Pedido #ORD-${order.orderNum} modificado`, 'blue');
             }
+
+            // Log activity
+            if (user) {
+                logActivity(user.uid, user.name, 'Modificación de Pedido', `Editó el pedido #ORD-${order.orderNum}`);
+            }
         } catch (error) {
             console.error("Error updating order:", error);
         }
@@ -75,6 +81,11 @@ export const OrdersProvider = ({ children }) => {
 
             await fsDeleteOrder(id);
             showNotification(`Pedido #ORD-${orderNum} eliminado correctamente`, 'rose');
+
+            // Log activity
+            if (user) {
+                logActivity(user.uid, user.name, 'Eliminación de Pedido', `Eliminó el pedido #ORD-${orderNum}`);
+            }
         } catch (error) {
             console.error("Error deleting order:", error);
         }
@@ -105,6 +116,11 @@ export const OrdersProvider = ({ children }) => {
                 orderNum
             });
             showNotification(`Pedido #ORD-${orderNum} creado correctamente`, 'emerald');
+
+            // Log activity
+            if (user) {
+                logActivity(user.uid, user.name, 'Creación de Pedido', `Creó el pedido #ORD-${orderNum}`);
+            }
         } catch (error) {
             console.error("Error creating order:", error);
         }

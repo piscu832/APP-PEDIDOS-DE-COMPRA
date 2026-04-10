@@ -5,6 +5,7 @@ import BottomNav from '../components/BottomNav';
 import Logo from '../components/Logo';
 import { db } from '../firebase';
 import { collection, onSnapshot, doc, updateDoc, query, orderBy } from 'firebase/firestore';
+import { logActivity } from '../services/activityService';
 
 // --- Reusable Role Toggle ---
 const RoleToggle = ({ isAdmin, onChange }) => (
@@ -55,6 +56,16 @@ const RolesPage = () => {
         try {
             const userRef = doc(db, "users", targetUser.id);
             await updateDoc(userRef, { role: newRole });
+
+            // Log activity
+            if (user) {
+                logActivity(
+                    user.uid,
+                    user.name,
+                    'Cambio de Rango',
+                    `Cambió el rango de ${targetUser.name} (${targetUser.email}) a ${newRole}`
+                );
+            }
         } catch (error) {
             console.error("Error updating role:", error);
             alert("Error al actualizar el rol");

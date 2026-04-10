@@ -11,6 +11,7 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
         { name: 'Mis Pedidos', icon: 'receipt_long', path: '/operator' },
         { name: 'Reportes', icon: 'bar_chart', path: '/reports', adminOnly: true },
         { name: 'Gestión de Roles', icon: 'admin_panel_settings', path: '/roles', adminOnly: true },
+        { name: 'Registro de Movimientos', icon: 'history', path: '/activity', adminOnly: true },
         { name: 'Configuración', icon: 'settings', path: '/settings' },
         { name: 'Cerrar Sesión', icon: 'logout', path: '/login' }
     ];

@@ -1,0 +1,125 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import SideDrawer from '../components/SideDrawer';
+import BottomNav from '../components/BottomNav';
+import Logo from '../components/Logo';
+import { getActivityLogs } from '../services/activityService';
+
+const ActivityLogsPage = () => {
+    const { user } = useAuth();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [logs, setLogs] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchLogs = async () => {
+            try {
+                const logsData = await getActivityLogs();
+                setLogs(logsData);
+            } catch (error) {
+                console.error("Error fetching logs:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchLogs();
+    }, []);
+
+    const getActionColor = (action) => {
+        if (action.includes('Eliminación')) return 'rose';
+        if (action.includes('Creación')) return 'emerald';
+        if (action.includes('Modificación')) return 'blue';
+        if (action.includes('Rango')) return 'amber';
+        return 'slate';
+    };
+
+    return (
+        <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#0a0f16]">
+            <header className="flex items-center bg-white/80 dark:bg-[#0a0f16]/80 backdrop-blur-md p-4 sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-3 flex-1">
+                    <button
+                        onClick={() => setIsMenuOpen(true)}
+                        className="size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-slate-600 dark:text-slate-400">menu</span>
+                    </button>
+                    <Logo />
+                    <div className="flex flex-col">
+                        <span className="text-sm font-black tracking-tighter uppercase text-slate-900 dark:text-white">VILLALBA</span>
+                        <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-amber-600 mt-0.5">Auditoría</span>
+                    </div>
+                </div>
+            </header>
+
+            <main className="flex-1 w-full max-w-[600px] mx-auto px-4 py-8 pb-40">
+                <div className="mb-8 px-2">
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Registro de Movimientos</h1>
+                    <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm italic font-medium">Historial de acciones críticas realizadas en el sistema.</p>
+                </div>
+
+                <div className="space-y-4">
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-20 gap-4">
+                            <div className="size-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Cargando registros...</p>
+                        </div>
+                    ) : logs.length > 0 ? (
+                        logs.map((log) => {
+                            const color = getActionColor(log.action);
+                            return (
+                                <div key={log.id} className="relative bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm transition-all hover:shadow-md group overflow-hidden">
+                                    {/* Action Stripe */}
+                                    <div className={`absolute top-0 left-0 w-1.5 h-full ${
+                                        color === 'rose' ? 'bg-rose-500' : 
+                                        color === 'emerald' ? 'bg-emerald-500' : 
+                                        color === 'blue' ? 'bg-blue-600' : 
+                                        color === 'amber' ? 'bg-amber-500' : 'bg-slate-400'
+                                    }`}></div>
+
+                                    <div className="flex flex-col gap-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-full
+                                                ${color === 'rose' ? 'bg-rose-50 text-rose-600 dark:bg-rose-500/10' : 
+                                                  color === 'emerald' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10' : 
+                                                  color === 'blue' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10' : 
+                                                  color === 'amber' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10' : 
+                                                  'bg-slate-50 text-slate-500 dark:bg-slate-500/10'}`}
+                                            >
+                                                {log.action}
+                                            </span>
+                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{log.displayTime}</span>
+                                        </div>
+
+                                        <p className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-snug">
+                                            {log.details}
+                                        </p>
+
+                                        <div className="flex items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-800/50">
+                                            <div className="size-6 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] text-slate-500 font-bold border border-slate-200 dark:border-slate-700">
+                                                {log.userName.charAt(0)}
+                                            </div>
+                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                                Por: <span className="text-slate-900 dark:text-slate-300 ml-1">{log.userName}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <div className="text-center py-20 px-8 bg-slate-100/50 dark:bg-[#161e2a]/30 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800">
+                            <span className="material-symbols-outlined text-4xl text-slate-300 mb-4 block">history</span>
+                            <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">No hay movimientos registrados</p>
+                        </div>
+                    )}
+                </div>
+            </main>
+
+            <SideDrawer isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} user={user} />
+            <BottomNav active="dashboard" />
+        </div>
+    );
+};
+
+export default ActivityLogsPage;
