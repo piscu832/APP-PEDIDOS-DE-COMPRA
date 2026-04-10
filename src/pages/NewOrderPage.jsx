@@ -3,21 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 import { useOrders } from '../context/OrdersContext';
+import { useSettings } from '../context/SettingsContext';
 
 const NewOrderPage = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { addOrder } = useOrders();
+    const { sectors } = useSettings();
+    
     const [formData, setFormData] = useState({
         item: '',
         quantity: '',
         unit: 'UDS',   // Unidad de medida
         priority: 'Media',
         supplier: '',   // Proveedor recomendado
+        sector: user?.sector || '', // Default to user sector if available
     });
 
     const handleConfirm = () => {
-        if (!formData.item || !formData.quantity) return alert("Completa los campos obligatorios");
+        if (!formData.item || !formData.quantity || !formData.sector) {
+            return alert("Completa los campos obligatorios (Incluyendo Sector)");
+        }
 
         const newOrder = {
             item: formData.item,
@@ -30,6 +36,7 @@ const NewOrderPage = () => {
             priority: formData.priority,
             deliveryDate: "",
             status: "Pendiente",
+            sector: formData.sector,
         };
 
         addOrder(newOrder);
@@ -56,17 +63,37 @@ const NewOrderPage = () => {
             <main className="flex-1 w-full max-w-[480px] mx-auto px-6 py-8">
                 <div className="space-y-5">
 
-                    {/* Solicitante — auto-filled, read-only */}
-                    <div className="flex flex-col gap-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Solicitante</label>
-                        <div className="relative">
-                            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
-                            <input
-                                className="w-full pl-12 pr-4 h-14 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-500 dark:text-slate-400 cursor-not-allowed"
-                                value={user?.name || "Cargando..."}
-                                readOnly
-                                type="text"
-                            />
+                    <div className="grid grid-cols-2 gap-4">
+                        {/* Solicitante — auto-filled, read-only */}
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Solicitante</label>
+                            <div className="relative">
+                                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+                                <input
+                                    className="w-full pl-12 pr-4 h-14 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-[13px] font-bold text-slate-500 dark:text-slate-400 cursor-not-allowed truncate"
+                                    value={user?.name || "Cargando..."}
+                                    readOnly
+                                    type="text"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Sector */}
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Sector</label>
+                            <div className="relative">
+                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl pointer-events-none">factory</span>
+                                <select
+                                    className="w-full pl-10 pr-4 h-14 bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-[13px] font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/40 outline-none appearance-none"
+                                    value={formData.sector}
+                                    onChange={set('sector')}
+                                >
+                                    <option value="" disabled>Seleccionar...</option>
+                                    {sectors.map(s => (
+                                        <option key={s.id} value={s.name}>{s.name}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                     </div>
 

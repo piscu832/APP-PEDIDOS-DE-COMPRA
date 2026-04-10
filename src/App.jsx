@@ -3,6 +3,7 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { OrdersProvider } from './context/OrdersContext';
+import { SettingsProvider } from './context/SettingsContext';
 import { NotificationProvider } from './context/NotificationContext';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -24,10 +25,11 @@ function App() {
     <ThemeProvider>
       <NotificationProvider>
           <AuthProvider>
-            <OrdersProvider>
-            <AnimatePresence>
-              {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
-            </AnimatePresence>
+            <SettingsProvider>
+              <OrdersProvider>
+              <AnimatePresence>
+                {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+              </AnimatePresence>
 
             {!showSplash && (
               <HashRouter>
@@ -47,6 +49,7 @@ function App() {
               </HashRouter>
             )}
             </OrdersProvider>
+            </SettingsProvider>
           </AuthProvider>
       </NotificationProvider>
     </ThemeProvider>

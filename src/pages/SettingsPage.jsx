@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import Logo from '../components/Logo';
-
+import { useSettings } from '../context/SettingsContext';
 import { useNotifications } from '../context/NotificationContext';
 
 const SettingsPage = () => {
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const { toggleTheme } = useTheme();
+    const { sectors, addSector, deleteSector } = useSettings();
+    const [newSector, setNewSector] = useState('');
+    const [showSectorAdmin, setShowSectorAdmin] = useState(false);
+
     const {
         enabled: notificationsEnabled,
         setEnabled: setNotificationsEnabled,
@@ -18,6 +22,13 @@ const SettingsPage = () => {
         setSoundEnabled,
         testSound
     } = useNotifications();
+
+    const handleAddSector = (e) => {
+        e.preventDefault();
+        if (!newSector.trim()) return;
+        addSector(newSector.trim());
+        setNewSector('');
+    };
 
     return (
         <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#0a0f16]">
@@ -101,26 +112,85 @@ const SettingsPage = () => {
                     </div>
                 </section>
 
-                <section>
-                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-900 dark:text-white">
-                        <span className="material-symbols-outlined text-blue-600">admin_panel_settings</span> Administración
-                    </h2>
-                    <button
-                        onClick={() => navigate('/roles')}
-                        className="w-full flex items-center justify-between p-4 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-blue-600/50 transition-colors group"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="size-10 rounded-lg bg-blue-600/10 flex items-center justify-center text-blue-600">
-                                <span className="material-symbols-outlined">group_add</span>
-                            </div>
-                            <div className="text-left">
-                                <p className="font-bold text-slate-900 dark:text-white">Gestión de Roles</p>
-                                <p className="text-xs text-slate-500">Control de acceso y usuarios</p>
+                {user?.role === 'Administrador' && (
+                    <section>
+                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-900 dark:text-white">
+                            <span className="material-symbols-outlined text-blue-600">admin_panel_settings</span> Administración
+                        </h2>
+                        <div className="space-y-4">
+                            <button
+                                onClick={() => navigate('/roles')}
+                                className="w-full flex items-center justify-between p-4 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-blue-600/50 transition-colors group"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="size-10 rounded-lg bg-blue-600/10 flex items-center justify-center text-blue-600">
+                                        <span className="material-symbols-outlined">group_add</span>
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-bold text-slate-900 dark:text-white">Gestión de Roles</p>
+                                        <p className="text-xs text-slate-500">Control de acceso y usuarios</p>
+                                    </div>
+                                </div>
+                                <span className="material-symbols-outlined text-slate-400 group-hover:text-blue-600">chevron_right</span>
+                            </button>
+
+                            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 overflow-hidden">
+                                <button
+                                    onClick={() => setShowSectorAdmin(!showSectorAdmin)}
+                                    className="w-full flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="size-10 rounded-lg bg-emerald-600/10 flex items-center justify-center text-emerald-600">
+                                            <span className="material-symbols-outlined">factory</span>
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="font-bold text-slate-900 dark:text-white">Gestión de Sectores</p>
+                                            <p className="text-xs text-slate-500">Añadir o quitar sectores del sistema</p>
+                                        </div>
+                                    </div>
+                                    <span className={`material-symbols-outlined text-slate-400 transition-transform ${showSectorAdmin ? 'rotate-90' : ''}`}>chevron_right</span>
+                                </button>
+
+                                {showSectorAdmin && (
+                                    <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20">
+                                        <form onSubmit={handleAddSector} className="flex gap-2 mb-4">
+                                            <input
+                                                type="text"
+                                                value={newSector}
+                                                onChange={(e) => setNewSector(e.target.value)}
+                                                placeholder="Nuevo sector..."
+                                                className="flex-1 bg-white dark:bg-[#0a0f16] border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500/50 outline-none"
+                                            />
+                                            <button
+                                                type="submit"
+                                                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 transition-colors"
+                                            >
+                                                Agregar
+                                            </button>
+                                        </form>
+
+                                        <div className="max-h-60 overflow-y-auto space-y-2 pr-2">
+                                            {sectors.map((s) => (
+                                                <div key={s.id} className="flex items-center justify-between p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
+                                                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{s.name}</span>
+                                                    <button
+                                                        onClick={() => deleteSector(s.id, s.name)}
+                                                        className="text-slate-400 hover:text-rose-500 transition-colors"
+                                                    >
+                                                        <span className="material-symbols-outlined text-lg">delete</span>
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            {sectors.length === 0 && (
+                                                <p className="text-center text-xs text-slate-500 py-4">No hay sectores configurados</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
-                        <span className="material-symbols-outlined text-slate-400 group-hover:text-blue-600">chevron_right</span>
-                    </button>
-                </section>
+                    </section>
+                )}
 
                 <section className="pt-4">
                     <button

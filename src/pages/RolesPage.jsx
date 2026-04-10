@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useSettings } from '../context/SettingsContext';
 import SideDrawer from '../components/SideDrawer';
 import BottomNav from '../components/BottomNav';
 import Logo from '../components/Logo';
@@ -25,6 +26,7 @@ const RoleToggle = ({ isAdmin, onChange }) => (
 
 const RolesPage = () => {
     const { user } = useAuth();
+    const { sectors } = useSettings();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -69,6 +71,26 @@ const RolesPage = () => {
         } catch (error) {
             console.error("Error updating role:", error);
             alert("Error al actualizar el rol");
+        }
+    };
+
+    const updateSector = async (targetUser, newSector) => {
+        try {
+            const userRef = doc(db, "users", targetUser.id);
+            await updateDoc(userRef, { sector: newSector });
+
+            // Log activity
+            if (user) {
+                logActivity(
+                    user.uid,
+                    user.name,
+                    'Cambio de Sector',
+                    `Cambió el sector de ${targetUser.name} a ${newSector}`
+                );
+            }
+        } catch (error) {
+            console.error("Error updating sector:", error);
+            alert("Error al actualizar el sector");
         }
     };
 
@@ -170,9 +192,28 @@ const RolesPage = () => {
                                     >
                                         <span className="material-symbols-outlined">person</span>
                                     </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-slate-900 dark:text-white">{u.name}</span>
-                                        <span className="text-[10px] text-slate-500 uppercase tracking-wider">{u.email}</span>
+                                    <div className="flex flex-col gap-1.5">
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-bold text-slate-900 dark:text-white truncate max-w-[150px]">{u.name}</span>
+                                            <span className="text-[9px] text-slate-500 uppercase tracking-wider truncate max-w-[150px]">{u.email}</span>
+                                        </div>
+                                        
+                                        <div className="flex flex-col gap-1 mt-1">
+                                            <span className="text-[7px] font-black text-blue-600 uppercase tracking-widest pl-1">Sector Asignado:</span>
+                                            <div className="relative">
+                                                <select
+                                                    value={u.sector || ""}
+                                                    onChange={(e) => updateSector(u, e.target.value)}
+                                                    className="w-full bg-slate-100 dark:bg-slate-800/80 text-[10px] font-bold uppercase tracking-widest text-slate-900 dark:text-white px-3 py-2 rounded-xl outline-none appearance-none pr-8 cursor-pointer border border-slate-200 dark:border-slate-700 focus:border-blue-600/50 transition-all shadow-sm"
+                                                >
+                                                    <option value="" disabled>Seleccionar Sector...</option>
+                                                    {sectors.map(s => (
+                                                        <option key={s.id} value={s.name}>{s.name}</option>
+                                                    ))}
+                                                </select>
+                                                <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-[16px] text-blue-600 pointer-events-none">expand_more</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 

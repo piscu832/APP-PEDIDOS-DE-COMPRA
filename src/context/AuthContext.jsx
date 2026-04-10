@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     // --- REGISTER ---
-    const register = async (name, email, password) => {
+    const register = async (name, email, password, sector) => {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const firebaseUser = userCredential.user;
@@ -73,6 +73,7 @@ export const AuthProvider = ({ children }) => {
             await setDoc(doc(db, "users", firebaseUser.uid), {
                 name: name,
                 email: email,
+                sector: sector || 'Sin Especificar',
                 role: 'Operario', // Default role for new users
                 createdAt: new Date().toISOString()
             });

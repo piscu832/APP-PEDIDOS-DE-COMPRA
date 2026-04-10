@@ -31,7 +31,8 @@ const ReportsPage = () => {
             const matchesSearch =
                 order.item?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 order.orderNum?.toString().includes(searchTerm) ||
-                order.operatorName?.toLowerCase().includes(searchTerm.toLowerCase());
+                order.operatorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                order.sector?.toLowerCase().includes(searchTerm.toLowerCase());
 
             const matchesStatus = statusFilter === 'Todos' || order.status === statusFilter;
 
@@ -52,10 +53,11 @@ const ReportsPage = () => {
 
     // Export to CSV
     const exportToCSV = () => {
-        const headers = ["ID Orden", "Producto", "Estado", "Prioridad", "Cantidad", "Unidad", "Solicitante", "Fecha Creacion", "Fecha Entrega", "Proveedor"];
+        const headers = ["ID Orden", "Producto", "Sector", "Estado", "Prioridad", "Cantidad", "Unidad", "Solicitante", "Fecha Creacion", "Fecha Entrega", "Proveedor"];
         const rows = filteredOrders.map(o => [
             `#ORD-${o.orderNum}`,
             o.item,
+            o.sector || "N/A",
             o.status,
             o.priority,
             o.quantity,
@@ -86,6 +88,7 @@ const ReportsPage = () => {
         const rows = filteredOrders.map(o => [
             `#ORD-${o.orderNum}`,
             o.item,
+            o.sector || "N/A",
             o.status,
             o.priority,
             o.quantity,
@@ -219,7 +222,11 @@ const ReportsPage = () => {
                                 <div>
                                     <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest">#ORD-{order.orderNum}</p>
                                     <h3 className="text-slate-900 dark:text-white font-bold text-base leading-tight mt-1">{order.item}</h3>
-                                    <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{order.operatorName}</p>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                        <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{order.operatorName}</p>
+                                        <span className="size-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
+                                        <p className="text-[10px] text-blue-600/70 font-black uppercase tracking-wider">{order.sector || 'S/S'}</p>
+                                    </div>
                                 </div>
                                 <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-slate-100 dark:border-white/5 ${order.status === 'Entregado' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'
                                     }`}>

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSettings } from '../context/SettingsContext';
 import Logo from '../components/Logo';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
     const { register } = useAuth();
+    const { sectors } = useSettings();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
@@ -15,12 +17,17 @@ const RegisterPage = () => {
         email: '',
         password: '',
         confirmPassword: '',
+        sector: '',
     });
 
     const handleRegister = async (e) => {
         e.preventDefault();
         setError('');
         setSuccessMessage('');
+
+        if (!form.sector) {
+            return setError('Debes seleccionar un sector');
+        }
 
         if (form.password.length < 6) {
             return setError('La contraseña debe tener al menos 6 caracteres');
@@ -33,7 +40,7 @@ const RegisterPage = () => {
         setIsLoading(true);
 
         try {
-            const res = await register(form.name, form.email, form.password);
+            const res = await register(form.name, form.email, form.password, form.sector);
             setSuccessMessage(res.message);
         } catch (err) {
             let msg = err.message || 'Error al crear la cuenta';
@@ -84,6 +91,24 @@ const RegisterPage = () => {
                                 value={form.name}
                                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                             />
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Sector / Área</label>
+                            <div className="relative">
+                                <select
+                                    required
+                                    className="w-full px-5 h-14 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-base font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer"
+                                    value={form.sector}
+                                    onChange={(e) => setForm({ ...form, sector: e.target.value })}
+                                >
+                                    <option value="" disabled>Selecciona tu sector...</option>
+                                    {sectors.map(s => (
+                                        <option key={s.id} value={s.name}>{s.name}</option>
+                                    ))}
+                                </select>
+                                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+                            </div>
                         </div>
 
                         <div className="space-y-1.5">
