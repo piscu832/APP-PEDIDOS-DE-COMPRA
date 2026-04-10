@@ -7,10 +7,6 @@ import { useNotifications } from './NotificationContext';
 const SettingsContext = createContext();
 
 export const SettingsProvider = ({ children }) => {
-    const [sectors, setSectors] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const { showNotification } = useNotifications();
-
     const defaultSectors = [
         "Mecanizado", "Pulido", "Grabado", "Lavado de cajas", 
         "Oficina técnica", "Dirección técnica", "Depósito", 
@@ -18,15 +14,27 @@ export const SettingsProvider = ({ children }) => {
         "Logística", "Reacondicionado"
     ];
 
+    const [sectors, setSectors] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const { showNotification } = useNotifications();
+
     useEffect(() => {
         const q = query(collection(db, "sectors"), orderBy("name", "asc"));
         
         const unsubscribe = onSnapshot(q, async (snapshot) => {
             if (snapshot.empty) {
-                // Initialize with defaults if empty
+                // Return default list while initializing in background
+                setSectors(defaultSectors.map((s, idx) => ({ id: 'def-'+idx, name: s })));
+                setLoading(false);
+
+                // Try to initialize Firestore with defaults
                 console.log("Initializing sectors with defaults...");
-                for (const sector of defaultSectors) {
-                    await fsAddSector(sector);
+                try {
+                    for (const sector of defaultSectors) {
+                        await fsAddSector(sector);
+                    }
+                } catch (e) {
+                    console.warn("Could not write defaults to Firestore (check permissions):", e);
                 }
             } else {
                 const sectorsData = snapshot.docs.map(doc => ({
@@ -38,6 +46,8 @@ export const SettingsProvider = ({ children }) => {
             }
         }, (error) => {
             console.error("Error fetching sectors:", error);
+            // Fallback to defaults on error
+            setSectors(defaultSectors.map((s, idx) => ({ id: 'err-'+idx, name: s })));
             setLoading(false);
         });
 
