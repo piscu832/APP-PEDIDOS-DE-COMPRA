@@ -22,8 +22,8 @@ function App() {
   return (
     <ThemeProvider>
       <NotificationProvider>
-        <OrdersProvider>
           <AuthProvider>
+            <OrdersProvider>
             <AnimatePresence>
               {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
             </AnimatePresence>
@@ -44,8 +44,8 @@ function App() {
                 </Routes>
               </HashRouter>
             )}
+            </OrdersProvider>
           </AuthProvider>
-        </OrdersProvider>
       </NotificationProvider>
     </ThemeProvider>
   );

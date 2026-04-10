@@ -8,6 +8,7 @@ import {
 import { onSnapshot, collection, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useNotifications } from './NotificationContext';
+import { useAuth } from './AuthContext';
 
 const OrdersContext = createContext();
 
@@ -15,9 +16,16 @@ export const OrdersProvider = ({ children }) => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const { showNotification } = useNotifications();
+    const { user } = useAuth();
 
     // Subscribe to Firestore updates in real-time
     useEffect(() => {
+        if (!user) {
+            setOrders([]);
+            setLoading(false);
+            return;
+        }
+
         const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -40,7 +48,7 @@ export const OrdersProvider = ({ children }) => {
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [user]);
 
     const updateOrder = async (id, fields) => {
         try {
