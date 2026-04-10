@@ -15,6 +15,16 @@ const ReportsPage = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
+    const startRef = React.useRef(null);
+    const endRef = React.useRef(null);
+
+    const openPicker = (ref) => {
+        if (ref.current) {
+            try { ref.current.showPicker(); }
+            catch { ref.current.click(); }
+        }
+    };
+
     // Filtering logic
     const filteredOrders = useMemo(() => {
         return orders.filter(order => {
@@ -143,7 +153,7 @@ const ReportsPage = () => {
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="flex-1 h-12 px-4 bg-slate-100 dark:bg-white/5 border-none rounded-2xl text-base font-black uppercase tracking-widest outline-none shadow-inner"
+                            className="flex-1 h-12 px-4 bg-slate-100 dark:bg-white/5 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest outline-none shadow-inner text-slate-900 dark:text-white"
                         >
                             <option value="Todos">Todos los Estados</option>
                             <option value="Pendiente">Pendientes</option>
@@ -158,6 +168,35 @@ const ReportsPage = () => {
                         >
                             <span className="material-symbols-outlined text-xl">download</span>
                         </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="relative">
+                            <input
+                                ref={startRef}
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                className="w-full h-11 px-4 pr-10 bg-slate-100 dark:bg-white/5 rounded-2xl text-[11px] font-bold outline-none focus:ring-2 focus:ring-blue-600 transition-all shadow-inner text-slate-400 color-scheme-light dark:color-scheme-dark"
+                            />
+                            <button onClick={() => openPicker(startRef)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">
+                                <span className="material-symbols-outlined text-lg">calendar_month</span>
+                            </button>
+                            <div className="absolute -top-1.5 left-3 bg-white dark:bg-[#161e2a] px-1 text-[8px] font-black text-slate-400 uppercase tracking-widest">Desde</div>
+                        </div>
+                        <div className="relative">
+                            <input
+                                ref={endRef}
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className="w-full h-11 px-4 pr-10 bg-slate-100 dark:bg-white/5 rounded-2xl text-[11px] font-bold outline-none focus:ring-2 focus:ring-blue-600 transition-all shadow-inner text-slate-400 color-scheme-light dark:color-scheme-dark"
+                            />
+                            <button onClick={() => openPicker(endRef)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">
+                                <span className="material-symbols-outlined text-lg">calendar_month</span>
+                            </button>
+                            <div className="absolute -top-1.5 left-3 bg-white dark:bg-[#161e2a] px-1 text-[8px] font-black text-slate-400 uppercase tracking-widest">Hasta</div>
+                        </div>
                     </div>
                 </div>
             </header>

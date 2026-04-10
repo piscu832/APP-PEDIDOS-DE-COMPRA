@@ -11,10 +11,21 @@ const ActivityLogsPage = () => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Date refs for custom triggers
+    const fromRef = React.useRef(null);
+    const toRef = React.useRef(null);
+
     // Filter states
     const [filterText, setFilterText] = useState('');
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
+
+    const openPicker = (ref) => {
+        if (ref.current) {
+            try { ref.current.showPicker(); }
+            catch { ref.current.click(); }
+        }
+    };
 
     useEffect(() => {
         const fetchLogs = async () => {
@@ -131,27 +142,45 @@ const ActivityLogsPage = () => {
                                     value={filterText}
                                     onChange={(e) => setFilterText(e.target.value)}
                                     placeholder="Ej: Pedido #ORD-0001 o Juan Perez..."
-                                    className="w-full h-11 pl-10 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                                    className="w-full h-11 pl-10 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all font-sans"
                                 />
                             </div>
                         </div>
                         <div className="space-y-1.5">
                             <label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Desde</label>
-                            <input 
-                                type="date"
-                                value={dateFrom}
-                                onChange={(e) => setDateFrom(e.target.value)}
-                                className="w-full h-11 px-4 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all color-scheme-light dark:color-scheme-dark"
-                            />
+                            <div className="relative group">
+                                <input 
+                                    ref={fromRef}
+                                    type="date"
+                                    value={dateFrom}
+                                    onChange={(e) => setDateFrom(e.target.value)}
+                                    className="w-full h-11 pl-4 pr-10 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all color-scheme-light dark:color-scheme-dark"
+                                />
+                                <button 
+                                    onClick={() => openPicker(fromRef)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-lg">calendar_month</span>
+                                </button>
+                            </div>
                         </div>
                         <div className="space-y-1.5">
                             <label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Hasta</label>
-                            <input 
-                                type="date"
-                                value={dateTo}
-                                onChange={(e) => setDateTo(e.target.value)}
-                                className="w-full h-11 px-4 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all color-scheme-light dark:color-scheme-dark"
-                            />
+                            <div className="relative group">
+                                <input 
+                                    ref={toRef}
+                                    type="date"
+                                    value={dateTo}
+                                    onChange={(e) => setDateTo(e.target.value)}
+                                    className="w-full h-11 pl-4 pr-10 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all color-scheme-light dark:color-scheme-dark"
+                                />
+                                <button 
+                                    onClick={() => openPicker(toRef)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-lg">calendar_month</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
