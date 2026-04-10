@@ -34,13 +34,13 @@ function App() {
                   <Route path="/" element={<Navigate to="/login" />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
-                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/dashboard" element={<ProtectedRoute adminOnly><Dashboard /></ProtectedRoute>} />
                   <Route path="/operator" element={<ProtectedRoute><OperatorPage /></ProtectedRoute>} />
                   <Route path="/new-order" element={<ProtectedRoute><NewOrderPage /></ProtectedRoute>} />
-                  <Route path="/roles" element={<ProtectedRoute><RolesPage /></ProtectedRoute>} />
-                  <Route path="/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
+                  <Route path="/roles" element={<ProtectedRoute adminOnly><RolesPage /></ProtectedRoute>} />
+                  <Route path="/reports" element={<ProtectedRoute adminOnly><ReportsPage /></ProtectedRoute>} />
                   <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-                  <Route path="/all-orders" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/all-orders" element={<ProtectedRoute adminOnly><Dashboard /></ProtectedRoute>} />
                 </Routes>
               </HashRouter>
             )}

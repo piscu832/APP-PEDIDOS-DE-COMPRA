@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, adminOnly = false }) => {
     const { user, loading } = useAuth();
 
     if (loading) {
@@ -17,9 +17,15 @@ const ProtectedRoute = ({ children }) => {
         return <Navigate to="/login" replace />;
     }
 
-    // Secondary check: if info is in DB but email not verified (should be handled by login logic, but good as safety)
+    // Secondary check: if info is in DB but email not verified
     if (!user.emailVerified) {
         return <Navigate to="/login" replace />;
+    }
+
+    // Role-based check: if route is for admins only and user is not an admin
+    if (adminOnly && user.role !== 'Administrador') {
+        // Redirect non-admins to their own page (OperatorPage)
+        return <Navigate to="/operator" replace />;
     }
 
     return children;

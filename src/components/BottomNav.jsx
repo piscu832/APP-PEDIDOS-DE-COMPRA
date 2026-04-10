@@ -1,15 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const BottomNav = ({ active }) => {
     const navigate = useNavigate();
+    const { user } = useAuth();
+    const isAdmin = user?.role === 'Administrador';
 
     const navItems = [
-        { name: 'Panel', icon: 'dashboard', path: '/dashboard', id: 'dashboard' },
-        { name: 'Pedidos', icon: 'receipt_long', path: '/operator', id: 'operator' },
-        { name: 'Reportes', icon: 'bar_chart', path: '/reports', id: 'reports' },
+        { name: 'Panel', icon: 'dashboard', path: '/dashboard', id: 'dashboard', adminOnly: true },
+        { name: 'Mis Pedidos', icon: 'receipt_long', path: '/operator', id: 'operator' },
+        { name: 'Reportes', icon: 'bar_chart', path: '/reports', id: 'reports', adminOnly: true },
         { name: 'Config', icon: 'settings', path: '/settings', id: 'settings' }
-    ];
+    ].filter(item => !item.adminOnly || isAdmin);
 
     return (
         <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-[#0a0f16]/80 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 px-6 pt-3 pb-8 flex justify-around items-center z-50">

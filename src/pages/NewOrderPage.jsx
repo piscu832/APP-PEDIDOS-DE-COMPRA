@@ -33,7 +33,7 @@ const NewOrderPage = () => {
         };
 
         addOrder(newOrder);
-        navigate('/dashboard');
+        navigate(user?.role === 'Administrador' ? '/dashboard' : '/operator');
     };
 
     const set = (field) => (e) => setFormData({ ...formData, [field]: e.target.value });
