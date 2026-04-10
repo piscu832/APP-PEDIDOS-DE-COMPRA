@@ -9,13 +9,44 @@ export const NotificationProvider = ({ children }) => {
         const saved = localStorage.getItem('notifications_enabled');
         return saved !== null ? JSON.parse(saved) : true;
     });
+    const [soundEnabled, setSoundEnabled] = useState(() => {
+        const saved = localStorage.getItem('notifications_sound_enabled');
+        return saved !== null ? JSON.parse(saved) : true;
+    });
 
     useEffect(() => {
         localStorage.setItem('notifications_enabled', JSON.stringify(enabled));
     }, [enabled]);
 
+    useEffect(() => {
+        localStorage.setItem('notifications_sound_enabled', JSON.stringify(soundEnabled));
+    }, [soundEnabled]);
+
+    const playSound = () => {
+        if (!soundEnabled) return;
+        try {
+            const audio = new Audio('/notification.mp3');
+            audio.volume = 0.5;
+            audio.play().catch(err => {
+                console.warn("Reproducción de audio bloqueada por el navegador. Interactúa con la página primero.");
+            });
+        } catch (error) {
+            console.error("Error playing notification sound:", error);
+        }
+    };
+
+    const testSound = () => {
+        const audio = new Audio('/notification.mp3');
+        audio.volume = 0.6;
+        audio.play().catch(err => {
+            alert("El navegador bloqueó el sonido. Haz clic en cualquier parte de la pantalla e intenta de nuevo.");
+        });
+    };
+
     const showNotification = (message, type = 'blue') => {
         if (!enabled) return;
+
+        playSound();
 
         const id = Math.random().toString(36).substr(2, 9);
         setNotifications(prev => [...prev, { id, message, type }]);
@@ -26,7 +57,7 @@ export const NotificationProvider = ({ children }) => {
     };
 
     return (
-        <NotificationContext.Provider value={{ showNotification, enabled, setEnabled }}>
+        <NotificationContext.Provider value={{ showNotification, enabled, setEnabled, soundEnabled, setSoundEnabled, testSound }}>
             {children}
 
             {/* Notification Portal */}

@@ -11,7 +11,13 @@ const SettingsPage = () => {
     const navigate = useNavigate();
     const { logout } = useAuth();
     const { toggleTheme } = useTheme();
-    const { enabled: notificationsEnabled, setEnabled: setNotificationsEnabled } = useNotifications();
+    const {
+        enabled: notificationsEnabled,
+        setEnabled: setNotificationsEnabled,
+        soundEnabled,
+        setSoundEnabled,
+        testSound
+    } = useNotifications();
 
     return (
         <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#0a0f16]">
@@ -46,17 +52,51 @@ const SettingsPage = () => {
                     <div className="space-y-4">
                         <button
                             onClick={() => setNotificationsEnabled(!notificationsEnabled)}
-                            className="w-full flex items-center justify-between p-4 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-blue-600/50 transition-all"
+                            className="w-full flex items-center justify-between p-4 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-blue-600/50 transition-all shadow-sm"
                         >
-                            <div className="text-left">
-                                <p className="font-bold text-slate-900 dark:text-white tracking-tight">Alertas de Sistema</p>
-                                <p className="text-xs text-slate-500 font-medium">Notificar cambios de pedidos</p>
+                            <div className="text-left flex items-center gap-3">
+                                <div className="size-8 rounded-lg bg-blue-600/10 flex items-center justify-center text-blue-600">
+                                    <span className="material-symbols-outlined text-lg">notifications</span>
+                                </div>
+                                <div>
+                                    <p className="font-bold text-slate-900 dark:text-white tracking-tight">Alertas de Sistema</p>
+                                    <p className="text-xs text-slate-500 font-medium">Notificar cambios de pedidos</p>
+                                </div>
                             </div>
                             <div className={`w-12 h-6 rounded-full relative transition-colors duration-300 flex items-center px-1
                                 ${notificationsEnabled ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-800'}`}>
                                 <div className={`size-4 bg-white rounded-full shadow-sm transition-transform duration-300
                                     ${notificationsEnabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
                             </div>
+                        </button>
+
+                        <button
+                            onClick={() => setSoundEnabled(!soundEnabled)}
+                            className="w-full flex items-center justify-between p-4 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-blue-600/50 transition-all shadow-sm"
+                        >
+                            <div className="text-left flex items-center gap-3">
+                                <div className="size-8 rounded-lg bg-amber-600/10 flex items-center justify-center text-amber-600">
+                                    <span className="material-symbols-outlined text-lg">volume_up</span>
+                                </div>
+                                <div>
+                                    <p className="font-bold text-slate-900 dark:text-white tracking-tight">Sonido de Notificación</p>
+                                    <p className="text-xs text-slate-500 font-medium">Reproducir audio al alertar</p>
+                                </div>
+                            </div>
+                            <div className={`w-12 h-6 rounded-full relative transition-colors duration-300 flex items-center px-1
+                                ${soundEnabled ? 'bg-amber-500' : 'bg-slate-200 dark:bg-slate-800'}`}>
+                                <div className={`size-4 bg-white rounded-full shadow-sm transition-transform duration-300
+                                    ${soundEnabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                            </div>
+                        </button>
+
+                        <button
+                            onClick={testSound}
+                            disabled={!soundEnabled}
+                            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30"
+                        >
+                            <span className="material-symbols-outlined text-lg">play_circle</span>
+                            Probar Sonido
                         </button>
                     </div>
                 </section>

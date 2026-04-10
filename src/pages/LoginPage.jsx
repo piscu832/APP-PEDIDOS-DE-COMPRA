@@ -5,18 +5,38 @@ import Logo from '../components/Logo';
 
 const LoginPage = () => {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, resetPassword } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [infoMessage, setInfoMessage] = useState('');
 
     const [form, setForm] = useState({
         email: '',
         password: '',
     });
 
+    const handleForgotPassword = async () => {
+        if (!form.email) {
+            return setError('Ingresa tu email para recuperar la contraseña');
+        }
+        setError('');
+        setInfoMessage('');
+        setIsLoading(true);
+
+        try {
+            await resetPassword(form.email);
+            setInfoMessage('Se ha enviado un enlace de recuperación a tu email.');
+        } catch (err) {
+            setError('Error al enviar el email de recuperación. Verifica si el correo es correcto.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
+        setInfoMessage('');
         setIsLoading(true);
 
         try {
@@ -77,6 +97,12 @@ const LoginPage = () => {
                     </div>
                 )}
 
+                {infoMessage && (
+                    <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl text-blue-600 text-[10px] font-black uppercase tracking-wider text-center">
+                        {infoMessage}
+                    </div>
+                )}
+
                 <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-1.5">
                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Email</label>
@@ -109,6 +135,15 @@ const LoginPage = () => {
                                 value={form.password}
                                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                             />
+                        </div>
+                        <div className="flex justify-end pr-1">
+                            <button
+                                type="button"
+                                onClick={handleForgotPassword}
+                                className="text-[10px] font-bold text-slate-500 hover:text-blue-600 uppercase tracking-widest transition-colors"
+                            >
+                                ¿Olvidaste tu contraseña?
+                            </button>
                         </div>
                     </div>
 

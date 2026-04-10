@@ -14,6 +14,7 @@ const RegisterPage = () => {
         name: '',
         email: '',
         password: '',
+        confirmPassword: '',
     });
 
     const handleRegister = async (e) => {
@@ -23,6 +24,10 @@ const RegisterPage = () => {
 
         if (form.password.length < 6) {
             return setError('La contraseña debe tener al menos 6 caracteres');
+        }
+
+        if (form.password !== form.confirmPassword) {
+            return setError('Las contraseñas no coinciden');
         }
 
         setIsLoading(true);
@@ -104,6 +109,18 @@ const RegisterPage = () => {
                                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                             />
                             <span className="text-[9px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest mt-1 ml-1">Mínimo 6 caracteres</span>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Confirmar Contraseña</label>
+                            <input
+                                required
+                                className="w-full px-5 h-14 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-base font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all font-mono"
+                                placeholder="••••••••"
+                                type="password"
+                                value={form.confirmPassword}
+                                onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                            />
                         </div>
 
                         <button
