@@ -25,7 +25,7 @@ export const NotificationProvider = ({ children }) => {
     const playSound = () => {
         if (!soundEnabled) return;
         try {
-            const audio = new Audio('/notification.mp3');
+            const audio = new Audio('notification.mp3');
             audio.volume = 0.5;
             audio.play().catch(err => {
                 console.warn("Reproducción de audio bloqueada por el navegador. Interactúa con la página primero.");
@@ -36,7 +36,7 @@ export const NotificationProvider = ({ children }) => {
     };
 
     const testSound = () => {
-        const audio = new Audio('/notification.mp3');
+        const audio = new Audio('notification.mp3');
         audio.volume = 0.6;
         audio.play().catch(err => {
             alert("El navegador bloqueó el sonido. Haz clic en cualquier parte de la pantalla e intenta de nuevo.");
