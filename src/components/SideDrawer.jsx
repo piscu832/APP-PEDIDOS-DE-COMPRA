@@ -7,7 +7,7 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
     if (!isOpen) return null;
 
     const menuItems = [
-        { name: 'Dashboard', icon: 'dashboard', path: '/dashboard', adminOnly: true },
+        { name: 'Gestión de Pedidos', icon: 'dashboard', path: '/dashboard' },
         { name: 'Mis Pedidos', icon: 'receipt_long', path: '/operator' },
         { name: 'Reportes', icon: 'bar_chart', path: '/reports', adminOnly: true },
         { name: 'Gestión de Roles', icon: 'admin_panel_settings', path: '/roles', adminOnly: true },

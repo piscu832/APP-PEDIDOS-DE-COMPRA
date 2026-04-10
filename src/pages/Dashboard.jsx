@@ -244,23 +244,30 @@ const Dashboard = () => {
                                     )}
                                 </div>
 
-                                <div className={`px-4 py-3 bg-slate-50/50 dark:bg-slate-800/30 grid gap-2 text-center ${isAdmin ? 'grid-cols-3' : 'grid-cols-1'}`}>
-                                    {isAdmin && (
+                                <div className={`px-4 py-3 bg-slate-50/50 dark:bg-slate-800/30 grid gap-2 text-center ${(isAdmin || order.entity === user?.name) ? (isAdmin ? 'grid-cols-3' : 'grid-cols-2') : 'grid-cols-1'}`}>
+                                    {(isAdmin || order.entity === user?.name) ? (
                                         <>
-                                            <button onClick={() => setEditingOrder(order)} className="py-2.5 bg-blue-600/10 border border-blue-600/20 rounded-xl text-blue-600 font-black text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 hover:bg-blue-600 hover:text-white transition-all">
-                                                <span className="material-symbols-outlined text-[16px]">calendar_month</span>
-                                                Fecha
-                                            </button>
+                                            {isAdmin && (
+                                                <button onClick={() => setEditingOrder(order)} className="py-2.5 bg-blue-600/10 border border-blue-600/20 rounded-xl text-blue-600 font-black text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 hover:bg-blue-600 hover:text-white transition-all">
+                                                    <span className="material-symbols-outlined text-[16px]">calendar_month</span>
+                                                    Fecha
+                                                </button>
+                                            )}
                                             <button onClick={() => setEditingOrder(order)} className="py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-600 dark:text-slate-300 font-black text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 hover:border-blue-600 transition-all">
                                                 <span className="material-symbols-outlined text-[16px]">edit</span>
                                                 Editar
                                             </button>
+                                            <button onClick={() => handleDelete(order.id)} className="py-2.5 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl text-rose-600 font-black text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 hover:bg-rose-600 hover:text-white transition-all">
+                                                <span className="material-symbols-outlined text-[16px]">delete</span>
+                                                Borrar
+                                            </button>
                                         </>
+                                    ) : (
+                                        <div className="py-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest italic flex items-center justify-center gap-1.5">
+                                            <span className="material-symbols-outlined text-[14px]">lock</span>
+                                            Solo lectura
+                                        </div>
                                     )}
-                                    <button onClick={() => handleDelete(order.id)} className="py-2.5 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl text-rose-600 font-black text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 hover:bg-rose-600 hover:text-white transition-all">
-                                        <span className="material-symbols-outlined text-[16px]">delete</span>
-                                        Borrar
-                                    </button>
                                 </div>
                             </div>
                         ))

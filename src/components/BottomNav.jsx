@@ -8,7 +8,7 @@ const BottomNav = ({ active }) => {
     const isAdmin = user?.role === 'Administrador';
 
     const navItems = [
-        { name: 'Panel', icon: 'dashboard', path: '/dashboard', id: 'dashboard', adminOnly: true },
+        { name: 'Gestión', icon: 'dashboard', path: '/dashboard', id: 'dashboard' },
         { name: 'Mis Pedidos', icon: 'receipt_long', path: '/operator', id: 'operator' },
         { name: 'Reportes', icon: 'bar_chart', path: '/reports', id: 'reports', adminOnly: true },
         { name: 'Config', icon: 'settings', path: '/settings', id: 'settings' }

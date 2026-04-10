@@ -20,14 +20,26 @@ const RegisterPage = () => {
         e.preventDefault();
         setError('');
         setSuccessMessage('');
+
+        if (form.password.length < 6) {
+            return setError('La contraseña debe tener al menos 6 caracteres');
+        }
+
         setIsLoading(true);
 
         try {
             const res = await register(form.name, form.email, form.password);
             setSuccessMessage(res.message);
-            // We don't redirect yet because they need to confirm email
         } catch (err) {
-            setError(err.message || 'Error al crear la cuenta');
+            let msg = err.message || 'Error al crear la cuenta';
+            if (msg.includes('auth/weak-password')) {
+                msg = 'La contraseña es demasiado débil (mínimo 6 caracteres)';
+            } else if (msg.includes('auth/email-already-in-use')) {
+                msg = 'Este correo ya está registrado';
+            } else if (msg.includes('auth/invalid-email')) {
+                msg = 'El formato del correo no es válido';
+            }
+            setError(msg);
         } finally {
             setIsLoading(false);
         }
@@ -85,12 +97,13 @@ const RegisterPage = () => {
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Contraseña</label>
                             <input
                                 required
-                                className="w-full px-5 h-14 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-base font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                                className="w-full px-5 h-14 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-base font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all font-mono"
                                 placeholder="••••••••"
                                 type="password"
                                 value={form.password}
                                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                             />
+                            <span className="text-[9px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest mt-1 ml-1">Mínimo 6 caracteres</span>
                         </div>
 
                         <button
