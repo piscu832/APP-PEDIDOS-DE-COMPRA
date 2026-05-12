@@ -3,11 +3,12 @@ import { db } from "../firebase";
 
 const COLLECTION = "activity_logs";
 
-export const logActivity = async (userId, userName, action, details) => {
+export const logActivity = async (userId, userName, sector, action, details) => {
     try {
         await addDoc(collection(db, COLLECTION), {
             userId,
             userName,
+            sector,
             action,
             details,
             timestamp: serverTimestamp(),

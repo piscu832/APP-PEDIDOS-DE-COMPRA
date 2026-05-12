@@ -53,10 +53,11 @@ const ReportsPage = () => {
 
     // Export to CSV
     const exportToCSV = () => {
-        const headers = ["ID Orden", "Producto", "Sector", "Estado", "Prioridad", "Cantidad", "Unidad", "Solicitante", "Fecha Creacion", "Fecha Entrega", "Proveedor"];
+        const headers = ["ID Orden", "Producto", "Descripción", "Sector", "Estado", "Prioridad", "Cantidad", "Unidad", "Solicitante", "Fecha Creacion", "Fecha Entrega", "Proveedor"];
         const rows = filteredOrders.map(o => [
             `#ORD-${o.orderNum}`,
             o.item,
+            o.description || "N/A",
             o.sector || "N/A",
             o.status,
             o.priority,
@@ -64,15 +65,16 @@ const ReportsPage = () => {
             o.unit,
             o.operatorName,
             o.createdAt,
-            o.deliveryDate || 'N/A',
+            o.deliveryDate ? o.deliveryDate.split('-').reverse().join('/') : 'N/A',
             o.supplier || 'N/A'
         ]);
 
         const csvContent = [headers, ...rows]
-            .map(e => e.map(cell => `"${cell}"`).join(","))
+            .map(e => e.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
             .join("\n");
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        // Use BOM for UTF-8 so Google Sheets/Excel recognize accents
+        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
@@ -83,11 +85,13 @@ const ReportsPage = () => {
         document.body.removeChild(link);
     };
 
-    // Copy for Sheets (TSV)
+    // Copy for Sheets (TSV) - TAB separated for easy paste
     const copyToSheets = () => {
+        const headers = ["ID Orden", "Producto", "Descripción", "Sector", "Estado", "Prioridad", "Cantidad", "Unidad", "Solicitante", "Fecha Creacion", "Fecha Entrega", "Proveedor"];
         const rows = filteredOrders.map(o => [
             `#ORD-${o.orderNum}`,
             o.item,
+            o.description || "N/A",
             o.sector || "N/A",
             o.status,
             o.priority,
@@ -95,13 +99,13 @@ const ReportsPage = () => {
             o.unit,
             o.operatorName,
             o.createdAt,
-            o.deliveryDate || 'N/A',
+            o.deliveryDate ? o.deliveryDate.split('-').reverse().join('/') : 'N/A',
             o.supplier || 'N/A'
         ]);
 
-        const tsv = rows.map(r => r.join("\t")).join("\n");
+        const tsv = [headers, ...rows].map(r => r.join("\t")).join("\n");
         navigator.clipboard.writeText(tsv);
-        alert("Datos copiados. Pégalos directamente en Google Sheets.");
+        alert("Datos copiados con encabezados. Pégalos directamente en Google Sheets.");
     };
 
     if (loading) {

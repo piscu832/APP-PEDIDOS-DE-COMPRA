@@ -17,6 +17,7 @@ const EditOrderModal = ({ order, onSave, onClose }) => {
         supplier: order.supplier || '',
         deliveryDate: order.deliveryDate || '',
         status: order.status || 'Pendiente',
+        description: order.description || '',
         reason: order.reason || '',
     });
 
@@ -38,6 +39,11 @@ const EditOrderModal = ({ order, onSave, onClose }) => {
                     <div>
                         <p className="font-mono text-[10px] font-bold text-slate-400 uppercase">Editando pedido</p>
                         <h2 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">#ORD-{order.orderNum}</h2>
+                        <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{order.entity}</span>
+                            <span className="size-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
+                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{order.sector || 'S/S'}</span>
+                        </div>
                     </div>
                     <button onClick={onClose} className="size-9 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500">
                         <span className="material-symbols-outlined">close</span>
@@ -48,6 +54,11 @@ const EditOrderModal = ({ order, onSave, onClose }) => {
                     <div className="flex flex-col gap-1.5">
                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Producto / Insumo</label>
                         <input name="item" value={form.item} onChange={handleChange} className="w-full px-4 h-12 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/40" />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Descripción</label>
+                        <textarea name="description" value={form.description} onChange={handleChange} placeholder="Detalles del material..." className="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/40 min-h-[100px] resize-none" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -124,7 +135,9 @@ const Dashboard = () => {
 
     const filteredVisibleOrders = getTabList().filter(o =>
         o.item.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (o.description && o.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
         o.entity.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (o.sector && o.sector.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (o.orderNum && o.orderNum.toString().includes(searchQuery))
     );
 
@@ -227,8 +240,24 @@ const Dashboard = () => {
                                         <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-500/10 text-blue-600 font-black text-[10px] rounded-md uppercase tracking-wider">
                                             {order.quantity} {order.unit || 'UDS'}
                                         </span>
-                                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{order.entity} <span className="text-slate-300 mx-1">•</span> {order.supplier || "Sin proveedor"}</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1.5 flex-wrap">
+                                                {order.entity}
+                                                <span className="px-1.5 py-0.5 bg-blue-600/10 text-blue-600 rounded text-[8px] font-black border border-blue-600/20">
+                                                    {order.sector || 'S/S'}
+                                                </span>
+                                            </span>
+                                            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{order.supplier || "Sin proveedor"}</span>
+                                        </div>
                                     </div>
+
+                                    {order.description && (
+                                        <div className="mb-3 p-3 bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/5 rounded-xl">
+                                            <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                                                {order.description}
+                                            </p>
+                                        </div>
+                                    )}
 
                                     {order.status === 'Otro Motivo' && order.reason && (
                                         <div className="mb-3 p-3 bg-rose-50/50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10 rounded-xl">

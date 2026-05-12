@@ -15,6 +15,7 @@ const OperatorPage = () => {
     const myOrders = orders.filter(o =>
         o.entity === user?.name &&
         (o.item.toLowerCase().includes(search.toLowerCase()) ||
+            (o.description && o.description.toLowerCase().includes(search.toLowerCase())) ||
             (o.orderNum && o.orderNum.toString().includes(search)) ||
             (o.id.includes(search)))
     );
@@ -75,6 +76,8 @@ const OperatorPage = () => {
                                 <div className="space-y-0.5">
                                     <div className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-white/40">
                                         <span className="material-symbols-outlined text-[13px]">id_card</span> #ORD-{order.orderNum}
+                                        <span className="mx-1 text-slate-300 dark:text-slate-800">•</span>
+                                        <span className="text-blue-500 font-black">{order.sector || 'S/S'}</span>
                                     </div>
                                     <h3 className="text-slate-900 dark:text-white text-sm font-black tracking-tight leading-tight">
                                         {order.item}
@@ -85,6 +88,14 @@ const OperatorPage = () => {
                                     {order.priority}
                                 </span>
                             </div>
+
+                            {order.description && (
+                                <div className="mb-3 p-3 bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/5 rounded-xl">
+                                    <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-tight font-medium">
+                                        {order.description}
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="bg-slate-50 dark:bg-white/[0.03] rounded-xl p-2.5 border border-slate-100 dark:border-white/5 inline-block min-w-[120px]">
                                 <p className="text-[8px] text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] font-bold mb-0.5">CANTIDAD</p>

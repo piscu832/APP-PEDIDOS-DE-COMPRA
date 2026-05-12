@@ -17,6 +17,7 @@ const NewOrderPage = () => {
         unit: 'UDS',   // Unidad de medida
         priority: 'Media',
         supplier: '',   // Proveedor recomendado
+        description: '', // Nueva descripción
         sector: user?.sector || '', // Default to user sector if available
     });
 
@@ -30,6 +31,7 @@ const NewOrderPage = () => {
             entity: user?.name || "Usuario Desconocido",
             operatorName: user?.name, // For consistency in reports
             supplier: formData.supplier || "No especificado",
+            description: formData.description || "",
             quantity: formData.quantity,
             unit: formData.unit,
             code: "NEW-" + Math.floor(Math.random() * 999),
@@ -108,6 +110,20 @@ const NewOrderPage = () => {
                                 type="text"
                                 value={formData.item}
                                 onChange={set('item')}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Descripción */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Descripción</label>
+                        <div className="relative group">
+                            <span className="material-symbols-outlined absolute left-4 top-4 text-slate-400 group-focus-within:text-blue-600 transition-colors text-xl">description</span>
+                            <textarea
+                                className="w-full pl-12 pr-4 py-4 min-h-[120px] bg-white dark:bg-[#161e2a] border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/40 focus:border-blue-600 outline-none transition-all resize-none"
+                                placeholder="Descripción detallada del material o especificaciones..."
+                                value={formData.description}
+                                onChange={set('description')}
                             />
                         </div>
                     </div>

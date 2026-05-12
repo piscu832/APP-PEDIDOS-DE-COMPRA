@@ -77,12 +77,13 @@ const ActivityLogsPage = () => {
     const exportToCSV = () => {
         if (filteredLogs.length === 0) return alert("No hay datos para exportar con los filtros actuales.");
 
-        const headers = ["Fecha", "Accion", "Detalle", "Usuario", "ID Usuario"];
+        const headers = ["Fecha", "Accion", "Detalle", "Usuario", "Sector", "ID Usuario"];
         const rows = filteredLogs.map(log => [
             log.displayTime,
             log.action,
             `"${log.details.replace(/"/g, '""')}"`,
             log.userName,
+            log.sector || 'S/S',
             log.userId
         ]);
 
@@ -95,6 +96,24 @@ const ActivityLogsPage = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+
+    const copyToSheets = () => {
+        if (filteredLogs.length === 0) return alert("No hay datos para copiar.");
+        
+        const headers = ["Fecha", "Accion", "Detalle", "Usuario", "Sector", "ID Usuario"];
+        const rows = filteredLogs.map(log => [
+            log.displayTime,
+            log.action,
+            log.details,
+            log.userName,
+            log.sector || 'S/S',
+            log.userId
+        ]);
+
+        const tsv = [headers, ...rows].map(r => r.join("\t")).join("\n");
+        navigator.clipboard.writeText(tsv);
+        alert("Datos de movimientos copiados con encabezados. Pégalos en Google Sheets.");
     };
 
     return (
@@ -121,13 +140,21 @@ const ActivityLogsPage = () => {
                         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Registro de Movimientos</h1>
                         <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm italic font-medium">Historial de acciones críticas realizadas en el sistema.</p>
                     </div>
-                    <button 
-                        onClick={exportToCSV}
-                        className="h-11 px-6 bg-emerald-600 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all"
-                    >
-                        <span className="material-symbols-outlined text-lg">download</span>
-                        Exportar CSV
-                    </button>
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={copyToSheets}
+                            className="h-11 px-4 text-emerald-600 dark:text-emerald-400 font-black text-[9px] uppercase tracking-widest border-2 border-emerald-600/20 rounded-xl hover:bg-emerald-600/5 transition-colors"
+                        >
+                            Copiar para Sheets
+                        </button>
+                        <button 
+                            onClick={exportToCSV}
+                            className="h-11 px-6 bg-emerald-600 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all"
+                        >
+                            <span className="material-symbols-outlined text-lg">download</span>
+                            Exportar CSV
+                        </button>
+                    </div>
                 </div>
 
                 {/* Filters Section */}
@@ -228,6 +255,7 @@ const ActivityLogsPage = () => {
                                             </div>
                                             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                                                 Por: <span className="text-slate-900 dark:text-slate-300 ml-1">{log.userName}</span>
+                                                <span className="text-blue-500 font-black ml-2">({log.sector || 'S/S'})</span>
                                             </span>
                                         </div>
                                     </div>

@@ -64,6 +64,7 @@ const RolesPage = () => {
                 logActivity(
                     user.uid,
                     user.name,
+                    user.sector || 'S/S',
                     'Cambio de Rango',
                     `Cambió el rango de ${targetUser.name} (${targetUser.email}) a ${newRole}`
                 );
@@ -84,6 +85,7 @@ const RolesPage = () => {
                 logActivity(
                     user.uid,
                     user.name,
+                    user.sector || 'S/S',
                     'Cambio de Sector',
                     `Cambió el sector de ${targetUser.name} a ${newSector}`
                 );
@@ -122,6 +124,7 @@ const RolesPage = () => {
                 logActivity(
                     user.uid,
                     user.name,
+                    user.sector || 'S/S',
                     'Eliminación de Usuario',
                     `Eliminó permanentemente al usuario ${targetUser.name} (${targetUser.email})`
                 );

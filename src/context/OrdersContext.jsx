@@ -67,7 +67,7 @@ export const OrdersProvider = ({ children }) => {
 
             // Log activity
             if (user) {
-                logActivity(user.uid, user.name, 'Modificación de Pedido', `Editó el pedido #ORD-${order.orderNum}`);
+                logActivity(user.uid, user.name, user.sector || 'S/S', 'Modificación de Pedido', `Editó el pedido #ORD-${order.orderNum}`);
             }
         } catch (error) {
             console.error("Error updating order:", error);
@@ -85,7 +85,7 @@ export const OrdersProvider = ({ children }) => {
 
             // Log activity
             if (user) {
-                logActivity(user.uid, user.name, 'Eliminación de Pedido', `Eliminó el pedido #ORD-${orderNum}`);
+                logActivity(user.uid, user.name, user.sector || 'S/S', 'Eliminación de Pedido', `Eliminó el pedido #ORD-${orderNum}`);
             }
         } catch (error) {
             console.error("Error deleting order:", error);
@@ -114,7 +114,7 @@ export const OrdersProvider = ({ children }) => {
 
             // Log activity
             if (user) {
-                logActivity(user.uid, user.name, 'Creación de Pedido', `Creó el pedido #ORD-${orderNum}`);
+                logActivity(user.uid, user.name, user.sector || 'S/S', 'Creación de Pedido', `Creó el pedido #ORD-${orderNum}`);
             }
         } catch (error) {
             console.error("Error creating order:", error);
