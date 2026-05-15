@@ -5,18 +5,12 @@ import SideDrawer from '../components/SideDrawer';
 import Logo from '../components/Logo';
 import { useNavigate } from 'react-router-dom';
 import { useOrders } from '../context/OrdersContext';
-import { uploadImage } from '../services/uploadService';
 
 // Today's date in YYYY-MM-DD, always up to date at render time
 const todayISO = () => new Date().toISOString().split('T')[0];
 
 // --- Edit Order Modal ---
 const EditOrderModal = ({ order, onSave, onClose }) => {
-    const [isUploading, setIsUploading] = useState(false);
-    const [imageFile, setImageFile] = useState(null);
-    const [imagePreview, setImagePreview] = useState(order.imageUrl || null);
-    const [dragActive, setDragActive] = useState(false);
-
     const [form, setForm] = useState({
         item: order.item,
         entity: order.entity,
@@ -29,47 +23,6 @@ const EditOrderModal = ({ order, onSave, onClose }) => {
 
     const dateRef = useRef(null);
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImageFile(file);
-            setImagePreview(URL.createObjectURL(file));
-        }
-    };
-
-    const handleDrag = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
-        else if (e.type === "dragleave") setDragActive(false);
-    };
-
-    const handleDrop = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(false);
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            const file = e.dataTransfer.files[0];
-            setImageFile(file);
-            setImagePreview(URL.createObjectURL(file));
-        }
-    };
-
-    const handleSaveInternal = async () => {
-        setIsUploading(true);
-        try {
-            let finalImageUrl = order.imageUrl;
-            if (imageFile) {
-                finalImageUrl = await uploadImage(imageFile);
-            }
-            onSave({ ...form, imageUrl: finalImageUrl });
-        } catch (error) {
-            alert("Error al subir la imagen");
-        } finally {
-            setIsUploading(false);
-        }
-    };
 
     const openDatePicker = () => {
         if (dateRef.current) {
@@ -108,31 +61,6 @@ const EditOrderModal = ({ order, onSave, onClose }) => {
                         <textarea name="description" value={form.description} onChange={handleChange} placeholder="Detalles del material..." className="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/40 min-h-[100px] resize-none" />
                     </div>
 
-                    {/* Imagen en Modal */}
-                    <div className="flex flex-col gap-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Imagen del Pedido</label>
-                        <div 
-                            className={`relative min-h-[120px] border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all ${dragActive ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : 'border-slate-200 dark:border-slate-700'}`}
-                            onDragEnter={handleDrag}
-                            onDragLeave={handleDrag}
-                            onDragOver={handleDrag}
-                            onDrop={handleDrop}
-                        >
-                            {imagePreview ? (
-                                <div className="relative p-2">
-                                    <img src={imagePreview} alt="Preview" className="max-h-32 rounded-lg" />
-                                    <button onClick={() => {setImageFile(null); setImagePreview(null);}} className="absolute -top-1 -right-1 size-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg"><span className="material-symbols-outlined text-xs">close</span></button>
-                                </div>
-                            ) : (
-                                <label className="flex flex-col items-center gap-1 cursor-pointer py-4">
-                                    <span className="material-symbols-outlined text-slate-400">add_a_photo</span>
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Subir o arrastrar</span>
-                                    <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
-                                </label>
-                            )}
-                        </div>
-                    </div>
-
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1.5">
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Estado</label>
@@ -162,13 +90,7 @@ const EditOrderModal = ({ order, onSave, onClose }) => {
 
                 <div className="px-6 pb-6 flex gap-3">
                     <button onClick={onClose} className="flex-1 h-12 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-sm uppercase tracking-wider">Cancelar</button>
-                    <button 
-                        onClick={handleSaveInternal} 
-                        disabled={isUploading}
-                        className={`flex-1 h-12 rounded-xl ${isUploading ? 'bg-slate-400' : 'bg-blue-600'} text-white font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20`}
-                    >
-                        {isUploading ? 'Subiendo...' : 'Guardar Cambios'}
-                    </button>
+                    <button onClick={() => onSave(form)} className="flex-1 h-12 rounded-xl bg-blue-600 text-white font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">Guardar Cambios</button>
                 </div>
             </div>
         </div>
@@ -334,21 +256,6 @@ const Dashboard = () => {
                                             <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                                                 {order.description}
                                             </p>
-                                        </div>
-                                    )}
-
-                                    {order.imageUrl && (
-                                        <div className="mb-3">
-                                            <a href={order.imageUrl} target="_blank" rel="noopener noreferrer" className="inline-block relative group">
-                                                <img 
-                                                    src={order.imageUrl} 
-                                                    alt={order.item} 
-                                                    className="w-20 h-20 object-cover rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm transition-transform group-hover:scale-105"
-                                                />
-                                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
-                                                    <span className="material-symbols-outlined text-white text-sm">visibility</span>
-                                                </div>
-                                            </a>
                                         </div>
                                     )}
 

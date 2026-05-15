@@ -97,21 +97,6 @@ const OperatorPage = () => {
                                 </div>
                             )}
 
-                            {order.imageUrl && (
-                                <div className="mb-3">
-                                    <a href={order.imageUrl} target="_blank" rel="noopener noreferrer" className="inline-block relative group">
-                                        <img 
-                                            src={order.imageUrl} 
-                                            alt={order.item} 
-                                            className="w-16 h-16 object-cover rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm"
-                                        />
-                                        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
-                                            <span className="material-symbols-outlined text-white text-[14px]">visibility</span>
-                                        </div>
-                                    </a>
-                                </div>
-                            )}
-
                             <div className="bg-slate-50 dark:bg-white/[0.03] rounded-xl p-2.5 border border-slate-100 dark:border-white/5 inline-block min-w-[120px]">
                                 <p className="text-[8px] text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] font-bold mb-0.5">CANTIDAD</p>
                                 <p className="text-slate-900 dark:text-white font-mono text-base font-bold leading-none">{order.quantity} <span className="text-xs text-slate-500">{order.unit || 'UDS'}</span></p>
