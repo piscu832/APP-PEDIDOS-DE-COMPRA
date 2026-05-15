@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 import { useOrders } from '../context/OrdersContext';
 import { useSettings } from '../context/SettingsContext';
+import { uploadImage } from '../services/uploadService';
 
 const NewOrderPage = () => {
     const navigate = useNavigate();
@@ -11,6 +12,11 @@ const NewOrderPage = () => {
     const { addOrder } = useOrders();
     const { sectors } = useSettings();
     
+    const [isUploading, setIsUploading] = useState(false);
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [dragActive, setDragActive] = useState(false);
+
     const [formData, setFormData] = useState({
         item: '',
         quantity: '',
@@ -21,28 +27,71 @@ const NewOrderPage = () => {
         sector: user?.sector || '', // Default to user sector if available
     });
 
-    const handleConfirm = () => {
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragActive(true);
+        } else if (e.type === "dragleave") {
+            setDragActive(false);
+        }
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            const file = e.dataTransfer.files[0];
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleConfirm = async () => {
         if (!formData.item || !formData.quantity || !formData.sector) {
             return alert("Completa los campos obligatorios (Incluyendo Sector)");
         }
 
-        const newOrder = {
-            item: formData.item,
-            entity: user?.name || "Usuario Desconocido",
-            operatorName: user?.name, // For consistency in reports
-            supplier: formData.supplier || "No especificado",
-            description: formData.description || "",
-            quantity: formData.quantity,
-            unit: formData.unit,
-            code: "NEW-" + Math.floor(Math.random() * 999),
-            priority: formData.priority,
-            deliveryDate: "",
-            status: "Pendiente",
-            sector: formData.sector,
-        };
+        setIsUploading(true);
+        let imageUrl = "";
 
-        addOrder(newOrder);
-        navigate(user?.role === 'Administrador' ? '/dashboard' : '/operator');
+        try {
+            if (imageFile) {
+                imageUrl = await uploadImage(imageFile);
+            }
+
+            const newOrder = {
+                item: formData.item,
+                entity: user?.name || "Usuario Desconocido",
+                operatorName: user?.name, // For consistency in reports
+                supplier: formData.supplier || "No especificado",
+                description: formData.description || "",
+                quantity: formData.quantity,
+                unit: formData.unit,
+                code: "NEW-" + Math.floor(Math.random() * 999),
+                priority: formData.priority,
+                deliveryDate: "",
+                status: "Pendiente",
+                sector: formData.sector,
+                imageUrl: imageUrl, // Guardamos la URL de la imagen
+            };
+
+            await addOrder(newOrder);
+            navigate(user?.role === 'Administrador' ? '/dashboard' : '/operator');
+        } catch (error) {
+            alert("Error al guardar el pedido o subir la imagen.");
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     const set = (field) => (e) => setFormData({ ...formData, [field]: e.target.value });
@@ -128,6 +177,50 @@ const NewOrderPage = () => {
                         </div>
                     </div>
 
+                    {/* Adjuntar Imagen */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Imagen (Opcional)</label>
+                        <div 
+                            className={`relative flex flex-col items-center justify-center w-full min-h-[160px] border-2 border-dashed rounded-xl transition-all ${
+                                dragActive 
+                                    ? "border-blue-600 bg-blue-50 dark:bg-blue-900/20" 
+                                    : "border-slate-200 dark:border-slate-800 bg-white dark:bg-[#161e2a]"
+                            }`}
+                            onDragEnter={handleDrag}
+                            onDragLeave={handleDrag}
+                            onDragOver={handleDrag}
+                            onDrop={handleDrop}
+                        >
+                            {!imagePreview ? (
+                                <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer p-6">
+                                    <span className="material-symbols-outlined text-4xl text-slate-400 mb-2">add_a_photo</span>
+                                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 text-center">Arrastra una imagen o haz clic para subir</span>
+                                    <input 
+                                        type="file" 
+                                        className="hidden" 
+                                        accept="image/*" 
+                                        onChange={handleImageChange} 
+                                    />
+                                </label>
+                            ) : (
+                                <div className="relative w-full p-4 flex flex-col items-center">
+                                    <img 
+                                        src={imagePreview} 
+                                        alt="Preview" 
+                                        className="max-h-40 rounded-lg object-contain shadow-md"
+                                    />
+                                    <button 
+                                        onClick={() => { setImageFile(null); setImagePreview(null); }}
+                                        className="absolute top-2 right-2 size-8 flex items-center justify-center rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 transition-colors"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">close</span>
+                                    </button>
+                                    <span className="text-[10px] font-bold text-slate-500 mt-2 truncate max-w-full px-4">{imageFile?.name}</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     {/* Proveedor recomendado */}
                     <div className="flex flex-col gap-1.5">
                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">Proveedor Recomendado</label>
@@ -199,10 +292,11 @@ const NewOrderPage = () => {
                     <div className="flex flex-col gap-3 pt-4">
                         <button
                             onClick={handleConfirm}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-14 rounded-xl font-black tracking-widest shadow-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98] text-sm uppercase"
+                            disabled={isUploading}
+                            className={`w-full ${isUploading ? 'bg-slate-400' : 'bg-blue-600 hover:bg-blue-700'} text-white h-14 rounded-xl font-black tracking-widest shadow-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98] text-sm uppercase`}
                         >
-                            CONFIRMAR PEDIDO
-                            <span className="material-symbols-outlined text-lg">check_circle</span>
+                            {isUploading ? 'SUBIENDO...' : 'CONFIRMAR PEDIDO'}
+                            <span className="material-symbols-outlined text-lg">{isUploading ? 'sync' : 'check_circle'}</span>
                         </button>
                         <button
                             onClick={() => navigate(-1)}
